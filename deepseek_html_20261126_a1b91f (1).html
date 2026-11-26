@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="es" class="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evaluación Interactiva - Automatización y Mecatrónica</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            navy: {
+              950: '#071120',
+              900: '#0c1b33',
+              800: '#13294b',
+              700: '#1e3a68',
+            }
+          },
+          keyframes: {
+            fadeIn: { '0%': { opacity: '0', transform: 'translateY(8px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }
+          },
+          animation: { 'fade-in': 'fadeIn 0.3s ease-out' }
+        }
+      }
+    }
+  </script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #ffffff !important; color: #0f172a !important; }
+      .dark body, .dark .bg-slate-900, .dark .bg-slate-800 { background: #ffffff !important; color: #0f172a !important; }
+      .print-shadow-none { box-shadow: none !important; border: 1px solid #cbd5e1 !important; }
+      .print-only { display: block !important; }
+    }
+    .print-only { display: none; }
+  </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-screen flex flex-col transition-colors duration-200">
+
+  <!-- Barra Superior Institucional -->
+  <header class="bg-navy-900 dark:bg-slate-900 text-white shadow-lg border-b-4 border-red-700 sticky top-0 z-40 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center font-extrabold text-lg tracking-tight shadow-inner border border-red-400/30 flex-shrink-0">
+          CEI
+        </div>
+        <div>
+          <p id="headerInstitution" class="text-[11px] uppercase tracking-wider text-slate-300 font-semibold">Instituto Superior Nivel Terciario • Mecatrónica</p>
+          <h1 id="headerSubject" class="text-base sm:text-lg font-bold leading-tight text-white">Evaluación Interactiva — Automatización y Mecatrónica</h1>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-2.5">
+        <div class="hidden lg:flex flex-col text-right mr-1">
+          <span id="headerDateText" class="text-[11px] text-slate-300">Noviembre 2026</span>
+          <span id="headerTeacherText" class="text-sm font-semibold text-white">Prof. Dardo Bautista</span>
+        </div>
+
+        <button id="btnToggleTheme" onclick="toggleDarkMode()" title="Alternar modo claro / oscuro" aria-label="Alternar tema"
+          class="p-2 rounded-lg bg-navy-800 dark:bg-slate-800 hover:bg-navy-700 dark:hover:bg-slate-700 text-slate-200 border border-slate-600/50 transition">
+          <svg id="iconSun" class="w-4 h-4 hidden dark:block text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          <svg id="iconMoon" class="w-4 h-4 block dark:hidden text-slate-200" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+        </button>
+
+        <button id="btnToggleSound" onclick="toggleSound()" title="Activar o silenciar alertas sonoras" aria-label="Alternar sonido"
+          class="p-2 rounded-lg bg-navy-800 dark:bg-slate-800 hover:bg-navy-700 dark:hover:bg-slate-700 text-slate-200 border border-slate-600/50 transition">
+          <svg id="iconSoundOn" class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+          <svg id="iconSoundOff" class="w-4 h-4 hidden text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zM17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/></svg>
+        </button>
+
+        <button id="btnNavHome" onclick="navigateTo('home')" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-navy-800 dark:bg-slate-800 hover:bg-navy-700 dark:hover:bg-slate-700 text-slate-100 border border-slate-600/50 transition">
+          Inicio
+        </button>
+        <button id="btnNavTeacher" onclick="openPinModal()" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow transition flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Panel Docente
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none no-print"></div>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ==================== VISTA 1: INICIO ==================== -->
+    <section id="viewHome" class="space-y-6">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 sm:p-8">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 border-b border-slate-200 dark:border-slate-800 pb-6">
+          <div class="space-y-2 max-w-2xl">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-navy-900/10 dark:bg-indigo-500/20 text-navy-900 dark:text-indigo-300">
+              Banco de 120 Preguntas • Set Aleatorio Único por Alumno • Nómina Dinámica
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Evaluación Técnica Individual</h2>
+            <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300">
+              Cargá tu nómina desde el <strong>Panel Docente</strong> (PIN por defecto: <strong class="font-mono">1234</strong>) o agregá alumnos individualmente. Cada estudiante recibe <strong>10 preguntas aleatorias únicas</strong> (2 por eje temático, en orden aleatorio) con <strong>10:00 minutos</strong> y autoguardado.
+            </p>
+          </div>
+
+          <div class="bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl p-4 sm:min-w-[295px] space-y-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Ejes Temáticos Evaluados</h3>
+            <ul class="text-xs sm:text-sm text-slate-700 dark:text-slate-200 space-y-1 font-medium">
+              <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-600"></span>Sensores y transductores (2 preg.)</li>
+              <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-indigo-600"></span>Programación en PSeInt (2 preg.)</li>
+              <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-purple-600"></span>Algoritmos y lógica (2 preg.)</li>
+              <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-600"></span>Electrónica y componentes (2 preg.)</li>
+              <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-600"></span>Automatización y robótica (2 preg.)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <h3 class="text-base font-bold text-slate-900 dark:text-white">Nómina de Alumnos (12 puestos disponibles)</h3>
+            <div class="flex items-center gap-2">
+              <span id="rosterCountBadge" class="text-xs text-slate-500 dark:text-slate-400">0 cargados / 12 puestos</span>
+              <button onclick="openPinModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition">
+                Gestionar Nómina
+              </button>
+            </div>
+          </div>
+          <div id="studentCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VISTA 2: EXAMEN ==================== -->
+    <section id="viewExam" class="hidden space-y-5">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-4 sm:p-5 sticky top-[68px] z-30 no-print">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span id="examBadgeId" class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-navy-900 dark:bg-indigo-600 text-white">ALUMNO</span>
+              <span id="examComisionBadge" class="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">—</span>
+              <span id="examStatusBadge" class="px-2.5 py-0.5 rounded-md text-xs font-semibold bg-amber-100 text-amber-800">En curso</span>
+              <span id="examSaveIndicator" class="text-xs text-emerald-700 dark:text-emerald-400 font-medium flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                Autoguardado activo
+              </span>
+            </div>
+
+            <div class="mt-2 flex flex-wrap items-center gap-2">
+              <div class="flex items-center gap-1.5 flex-1 min-w-[200px] max-w-xs">
+                <label for="examInlineName" class="sr-only">Apellido y Nombre</label>
+                <input id="examInlineName" type="text" placeholder="Apellido y Nombre"
+                  onkeydown="if(event.key==='Enter') saveInlineStudentData()"
+                  class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-sm font-bold text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-navy-900" />
+              </div>
+              <div class="flex items-center gap-1.5 w-36">
+                <label for="examInlineDni" class="sr-only">DNI</label>
+                <input id="examInlineDni" type="text" placeholder="DNI / Legajo"
+                  onkeydown="if(event.key==='Enter') saveInlineStudentData()"
+                  class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-xs sm:text-sm font-mono text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-800 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-navy-900" />
+              </div>
+              <button type="button" onclick="saveInlineStudentData()"
+                class="px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                Guardar datos
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 sm:flex items-center gap-2.5 sm:gap-4">
+            <div class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-center min-w-[95px]">
+              <span class="block text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">Aciertos / Errores</span>
+              <div class="text-sm sm:text-base font-extrabold mt-0.5">
+                <span id="liveCorrectCount" class="text-emerald-600 dark:text-emerald-400">0 ✅</span>
+                <span class="text-slate-300 dark:text-slate-600 mx-1">|</span>
+                <span id="liveWrongCount" class="text-rose-600 dark:text-rose-400">0 ❌</span>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-center min-w-[90px]">
+              <span class="block text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">Nota Actual</span>
+              <span id="liveGradeDisplay" class="text-base sm:text-lg font-extrabold text-navy-900 dark:text-white">0.0 / 10</span>
+            </div>
+
+            <div id="timerBox" class="bg-navy-900 text-white rounded-xl px-3.5 py-2 text-center min-w-[110px] transition-colors">
+              <span class="block text-[10px] uppercase tracking-wider font-semibold text-slate-300">Tiempo Restante</span>
+              <span id="timerDisplay" class="font-mono text-lg sm:text-xl font-bold">10:00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-3 space-y-1.5">
+          <div class="flex justify-between text-xs font-medium text-slate-500 dark:text-slate-400">
+            <span id="progressText">Respondidas: 0 de 10</span>
+            <span id="modeBannerText">Modo: Corrección inmediata activa</span>
+          </div>
+          <div class="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+            <div id="timerProgressBar" class="h-full bg-emerald-500 transition-all duration-500" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <div class="mt-3 pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 mr-1">Navegador:</span>
+            <div id="questionNavPills" class="flex items-center gap-1.5 flex-wrap"></div>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <button id="btnFilterAll" onclick="setQuestionFilter('all')" class="px-2.5 py-1 rounded-lg font-bold bg-navy-900 text-white transition">
+              Ver todas (10)
+            </button>
+            <button id="btnFilterUnanswered" onclick="setQuestionFilter('unanswered')" class="px-2.5 py-1 rounded-lg font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+              Solo sin responder
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen Final -->
+      <div id="examFinalSummary" class="hidden bg-white dark:bg-slate-900 rounded-2xl shadow-sm border-2 border-navy-900 dark:border-indigo-500 p-6 space-y-5 print-shadow-none">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
+          <div>
+            <span id="finalStatusTag" class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-emerald-100 text-emerald-800 mb-2">Evaluación Finalizada</span>
+            <h3 id="finalStudentHeader" class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">Resultado Final</h3>
+            <p id="finalSummaryText" class="text-sm text-slate-600 dark:text-slate-300 mt-1">Tu examen fue cerrado y registrado.</p>
+          </div>
+          <div class="flex items-center gap-4 bg-slate-50 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div class="text-center pr-4 border-r border-slate-200 dark:border-slate-700">
+              <span class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400">Calificación</span>
+              <span id="finalGradeBig" class="text-3xl font-black text-navy-900 dark:text-white">0</span>
+              <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">/ 10</span>
+            </div>
+            <div class="text-xs space-y-1">
+              <p><strong class="text-emerald-700 dark:text-emerald-400">Correctas:</strong> <span id="finalOkCount">0</span></p>
+              <p><strong class="text-rose-700 dark:text-rose-400">Incorrectas:</strong> <span id="finalErrCount">0</span></p>
+              <p><strong class="text-slate-700 dark:text-slate-300">Sin responder:</strong> <span id="finalUnansweredCount">0</span></p>
+              <p><strong class="text-slate-700 dark:text-slate-300">Tiempo empleado:</strong> <span id="finalTimeUsed">00:00</span></p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">Desglose por Eje Temático</h4>
+          <div id="studentTopicBreakdown" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3"></div>
+        </div>
+
+        <div class="bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 no-print">
+          <div class="space-y-0.5">
+            <span class="text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400">Comprobante de Entrega Remota</span>
+            <p class="text-xs text-slate-600 dark:text-slate-300">Copiá tu código y enviálo al docente para cargar tu resultado.</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" onclick="copyReceiptCode()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+              Copiar Código
+            </button>
+            <button type="button" onclick="window.print()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-navy-900 hover:bg-navy-800 text-white shadow-sm transition flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+              Descargar PDF
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="questionsContainer" class="space-y-4"></div>
+
+      <div id="examFooterActions" class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-5 flex flex-col sm:flex-row items-center justify-between gap-4 no-print">
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+          Todas las respuestas se guardan automáticamente. Al llegar a <strong>00:00</strong> el examen se envía.
+        </p>
+        <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+          <button onclick="navigateTo('home')" class="px-4 py-2.5 rounded-xl text-sm font-semibold border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+            Volver
+          </button>
+          <button id="btnSubmitExam" onclick="openConfirmSubmitModal()" class="px-6 py-2.5 rounded-xl text-sm font-bold bg-navy-900 hover:bg-navy-800 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white shadow transition">
+            Finalizar y Entregar
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VISTA 3: DASHBOARD DOCENTE ==================== -->
+    <section id="viewTeacher" class="hidden space-y-6">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 print-shadow-none">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-red-700 dark:text-red-400">Panel de Control y Seguimiento en Tiempo Real</span>
+            <h2 id="teacherDashboardTitle" class="text-2xl font-extrabold text-slate-900 dark:text-white">Dashboard Docente — Prof. Dardo Bautista</h2>
+            <p class="text-sm text-slate-600 dark:text-slate-300">Monitoreo en vivo, auditoría por pregunta, importación de comprobantes y exportación de actas. Cada alumno recibe un set aleatorio único.</p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 no-print">
+            <button onclick="openCourseSettingsModal()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              Cátedra y PIN
+            </button>
+            <button onclick="openImportReceiptModal()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-amber-600 hover:bg-amber-500 text-white shadow-sm transition flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              Cargar Comprobante
+            </button>
+            <button onclick="openImportRosterModal()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm transition flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+              Importar Nómina
+            </button>
+            <button onclick="exportCSV()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              Exportar CSV
+            </button>
+            <button onclick="window.print()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-navy-900 hover:bg-navy-800 text-white shadow-sm transition flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+              Imprimir Acta
+            </button>
+            <button onclick="openResetAllModal()" class="px-3 py-2 rounded-xl text-xs font-semibold bg-rose-50 dark:bg-rose-950/60 hover:bg-rose-100 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800 transition">
+              Reiniciar Todos
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-4 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 no-print">
+          <div>
+            <span class="text-sm font-bold text-slate-900 dark:text-white">Modo de Corrección para los Alumnos:</span>
+            <p class="text-xs text-slate-600 dark:text-slate-300">Feedback inmediato al responder o solo al finalizar.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btnModeInstant" onclick="setCorrectionMode('instant')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition"></button>
+            <button id="btnModeEnd" onclick="setCorrectionMode('end')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition"></button>
+          </div>
+        </div>
+
+        <div id="teacherKpis" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-5"></div>
+
+        <div class="mt-5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">Rendimiento Global por Eje Temático (% Aciertos)</h3>
+            <span id="hardestTopicBadge" class="text-xs font-semibold text-slate-500 dark:text-slate-400">Eje más desafiante: —</span>
+          </div>
+          <div id="courseTopicChart" class="grid grid-cols-1 sm:grid-cols-5 gap-3"></div>
+        </div>
+
+        <div class="mt-6 overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl">
+          <table class="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr class="bg-navy-900 text-white text-xs uppercase tracking-wider">
+                <th class="py-3 px-3">#</th>
+                <th class="py-3 px-3">Alumno / DNI / Comisión</th>
+                <th class="py-3 px-3">Estado</th>
+                <th class="py-3 px-3 text-center">Progreso</th>
+                <th class="py-3 px-3 text-center">✔</th>
+                <th class="py-3 px-3 text-center">✘</th>
+                <th class="py-3 px-3 text-center">Tiempo</th>
+                <th class="py-3 px-3 text-center">Foco</th>
+                <th class="py-3 px-3 text-center">Nota</th>
+                <th class="py-3 px-3 text-center">Condición</th>
+                <th class="py-3 px-3 text-right no-print">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="teacherTableBody" class="divide-y divide-slate-200 dark:divide-slate-800 bg-white dark:bg-slate-900"></tbody>
+          </table>
+        </div>
+
+        <div class="hidden print-only mt-12 pt-6 border-t border-slate-300">
+          <div class="flex justify-between items-end text-xs text-slate-700">
+            <div>
+              <p class="font-bold text-slate-900" id="printInstitutionFoot">Instituto Superior Nivel Terciario – CEI</p>
+              <p id="printSubjectFoot">Cátedra: Automatización y Mecatrónica • Noviembre 2026</p>
+            </div>
+            <div class="text-center w-64">
+              <div class="border-t border-slate-700 pt-1.5">
+                <p class="font-bold text-slate-900" id="printTeacherFoot">Prof. Dardo Bautista</p>
+                <p>Firma del Docente Titular</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="auditPanel" class="hidden bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 no-print">
+        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4 mb-4">
+          <div>
+            <span class="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400">Auditoría Individual</span>
+            <h3 id="auditTitle" class="text-lg font-extrabold text-slate-900 dark:text-white">Detalle del Alumno</h3>
+          </div>
+          <button onclick="closeAuditPanel()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200">
+            Cerrar ✕
+          </button>
+        </div>
+        <div id="auditContent" class="space-y-3"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODALES -->
+
+  <div id="pinModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl max-w-sm w-full p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Acceso al Panel Docente</h3>
+        <button onclick="closeModal('pinModal')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+      <p class="text-xs text-slate-600 dark:text-slate-300">Ingresá el PIN docente (por defecto: <strong>1234</strong>).</p>
+      <div>
+        <input id="pinInput" type="password" maxlength="8" placeholder="••••"
+          onkeydown="if(event.key==='Enter') verifyPin()"
+          class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-center font-mono text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-navy-900" />
+        <p id="pinError" class="hidden text-xs text-rose-600 font-semibold mt-1.5">PIN incorrecto.</p>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('pinModal')" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Cancelar</button>
+        <button onclick="verifyPin()" class="px-5 py-2 rounded-xl text-sm font-bold bg-navy-900 hover:bg-navy-800 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white">Ingresar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="courseSettingsModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Personalización Institucional</span>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white">Datos de Cátedra y Seguridad</h3>
+        </div>
+        <button onclick="closeModal('courseSettingsModal')" class="text-slate-400 hover:text-slate-600 text-2xl font-bold leading-none">&times;</button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">Institución</label>
+          <input id="cfgInstitution" type="text" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-navy-900" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">Asignatura / Evaluación</label>
+          <input id="cfgSubject" type="text" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-navy-900" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">Docente</label>
+            <input id="cfgTeacher" type="text" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-navy-900" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">Fecha</label>
+            <input id="cfgDate" type="text" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-navy-900" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">Nuevo PIN Docente (4-8 caracteres)</label>
+          <input id="cfgPin" type="text" maxlength="8" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-navy-900" />
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+        <button onclick="closeModal('courseSettingsModal')" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Cancelar</button>
+        <button onclick="saveCourseSettings()" class="px-5 py-2 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="editStudentModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl max-w-lg w-full p-6 space-y-4 max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Gestión de Legajo</span>
+          <h3 id="editModalTitle" class="text-lg font-bold text-slate-900 dark:text-white">Editar Alumno</h3>
+        </div>
+        <button onclick="closeModal('editStudentModal')" class="text-slate-400 hover:text-slate-600 text-2xl font-bold leading-none">&times;</button>
+      </div>
+      <input type="hidden" id="editStudentId" />
+      <input type="hidden" id="editStudentContext" value="home" />
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">Apellido y Nombre</label>
+          <input id="editStudentName" type="text" placeholder="Ej: Aguirre, Leonel Javier" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-navy-900" />
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">DNI / Legajo</label>
+            <input id="editStudentDni" type="text" placeholder="Ej: 44.102.311" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-navy-900" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">Comisión</label>
+            <input id="editStudentComision" type="text" placeholder="Ej: 1.º Mecatrónica - Com. A" class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-navy-900" />
+          </div>
+        </div>
+        <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+          <div>
+            <span class="block text-xs font-bold text-slate-800 dark:text-slate-200">Puesto Habilitado</span>
+            <span class="text-[11px] text-slate-500 dark:text-slate-400">Si se desactiva, no podrá rendir.</span>
+          </div>
+          <label class="inline-flex items-center cursor-pointer">
+            <input id="editStudentActive" type="checkbox" checked class="w-5 h-5 rounded text-navy-900 focus:ring-navy-900" />
+          </label>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300 mb-1">Observaciones</label>
+          <textarea id="editStudentNotes" rows="2" placeholder="Anotaciones opcionales..." class="w-full px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-navy-900"></textarea>
+        </div>
+        <div id="editTeacherExtraFields" class="pt-2 border-t border-slate-200 dark:border-slate-800">
+          <div class="flex items-center justify-between p-3 rounded-xl bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800">
+            <div>
+              <span class="block text-xs font-bold text-rose-800 dark:text-rose-300">Reiniciar Intento</span>
+              <span class="text-[11px] text-rose-600 dark:text-rose-400">Borra respuestas y restablece cronómetro.</span>
+            </div>
+            <button type="button" onclick="resetStudentFromEditModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white transition">
+              Reiniciar
+            </button>
+          </div>
+          <div class="flex items-center justify-between p-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 mt-2">
+            <div>
+              <span class="block text-xs font-bold text-indigo-800 dark:text-indigo-300">Regenerar Set de Preguntas</span>
+              <span class="text-[11px] text-indigo-600 dark:text-indigo-400">Asigna 10 preguntas nuevas aleatorias y reinicia el intento.</span>
+            </div>
+            <button type="button" onclick="regenerateExamForStudent()" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition">
+              Regenerar
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
+        <button onclick="closeModal('editStudentModal')" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Cancelar</button>
+        <button onclick="saveStudentEdit()" class="px-5 py-2 rounded-xl text-sm font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="importRosterModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl max-w-xl w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Carga Masiva</span>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white">Importar Nómina</h3>
+        </div>
+        <button onclick="closeModal('importRosterModal')" class="text-slate-400 hover:text-slate-600 text-2xl font-bold leading-none">&times;</button>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+        Pegá hasta <strong>12 líneas</strong> con formato:
+        <code class="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-xs">Apellido y Nombre, DNI, Comisión</code> (separado por coma, punto y coma o tabulación).
+      </p>
+      <div>
+        <textarea id="importRosterTextarea" rows="8" placeholder="Aguirre, Leonel Javier, 44.102.311, Com. A&#10;Correa, Martín Alejandro, 43.890.145, Com. A" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600"></textarea>
+        <div class="flex items-center justify-between mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+          <span>Cada línea actualiza puestos #1 al #12.</span>
+          <button type="button" onclick="fillCurrentRosterInTextarea()" class="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold">Cargar nómina actual</button>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+        <button onclick="closeModal('importRosterModal')" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Cancelar</button>
+        <button onclick="processImportRoster()" class="px-5 py-2 rounded-xl text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm">Importar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="importReceiptModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl max-w-lg w-full p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Sincronización Remota</span>
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white">Importar Comprobante</h3>
+        </div>
+        <button onclick="closeModal('importReceiptModal')" class="text-slate-400 hover:text-slate-600 text-2xl font-bold leading-none">&times;</button>
+      </div>
+      <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+        Pegá el <strong>Código de Entrega</strong> (<code class="font-mono text-xs bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded">CEI-EVAL-...</code>) enviado por el estudiante.
+      </p>
+      <textarea id="receiptCodeInput" rows="4" placeholder="CEI-EVAL-eyJpZCI6..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+        <button onclick="closeModal('importReceiptModal')" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Cancelar</button>
+        <button onclick="processImportReceipt()" class="px-5 py-2 rounded-xl text-sm font-bold bg-amber-600 hover:bg-amber-500 text-white shadow-sm">Importar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirmSubmitModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4">
+      <h3 class="text-lg font-bold text-slate-900 dark:text-white">¿Finalizar y entregar evaluación?</h3>
+      <p id="confirmSubmitBody" class="text-sm text-slate-600 dark:text-slate-300">Una vez entregada, no podrás modificar tus respuestas.</p>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('confirmSubmitModal')" class="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Seguir revisando</button>
+        <button onclick="submitCurrentExam('submitted')" class="px-5 py-2 rounded-xl text-sm font-bold bg-navy-900 hover:bg-navy-800 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. BANCO DE 120 PREGUNTAS (24 por eje x 5 ejes)
+    // =========================================================================
+    const TOPICS = {
+      SENSORES: "Sensores y transductores",
+      PSEINT: "Programación en PSeInt",
+      ALGORITMOS: "Algoritmos y lógica",
+      ELECTRONICA: "Electrónica y componentes",
+      AUTOMATIZACION: "Automatización y robótica"
+    };
+
+    const TOPIC_KEYS = ["SENSORES", "PSEINT", "ALGORITMOS", "ELECTRONICA", "AUTOMATIZACION"];
+
+    const QUESTION_BANK = {
+      SENSORES: [
+        { q: "¿Cuál es el principio físico de funcionamiento de un sensor de proximidad inductivo?", opts: ["Variación de capacitancia dieléctrica frente a plásticos o líquidos", "Generación de un campo electromagnético de alta frecuencia que induce corrientes de Foucault en objetos metálicos", "Reflexión de un haz infrarrojo modulado sobre una superficie opaca", "Medición del tiempo de vuelo de ondas acústicas de 40 kHz"], ans: 1, exp: "Los sensores inductivos emplean un oscilador LC que genera un campo electromagnético; al acercarse un metal, las corrientes parásitas (Foucault) amortiguan la oscilación." },
+        { q: "¿Qué ventaja principal ofrece una termorresistencia PT100 frente a una termocupla tipo K en rangos de -50 °C a 250 °C?", opts: ["No requiere alimentación ni puente de medida alguno", "Soporta temperaturas superiores a 1.300 °C sin degradarse", "Mayor linealidad, precisión y repetibilidad en su curva resistencia-temperatura", "Genera una tensión propia en milivoltios sin variar su resistencia"], ans: 2, exp: "La PT100 (platino, 100 Ω a 0 °C) presenta una respuesta altamente lineal y estable en rangos medios de temperatura respecto a las termocuplas." },
+        { q: "¿Para qué se utiliza la conexión a 3 o 4 hilos en un sensor de temperatura PT100 industrial?", opts: ["Para alimentar simultáneamente dos PLC distintos", "Para compensar la resistencia óhmica de los cables de conexión y evitar errores de lectura", "Para convertir directamente la señal a corriente de 4–20 mA", "Para aislar galvánicamente el bulbo de platino"], ans: 1, exp: "Como la PT100 varía ~0,385 Ω/°C, la resistencia propia de cables largos introduce error; el 3.º y 4.º hilo permiten compensar dicha caída." },
+        { q: "¿Qué tipo de sensor de proximidad es capaz de detectar el nivel de granos, líquidos o plásticos a través de la pared de un tanque no metálico?", opts: ["Sensor inductivo blindado", "Sensor capacitivo", "Interruptor reed magnético", "Encoder incremental óptico"], ans: 1, exp: "Los sensores capacitivos detectan cambios en la constante dieléctrica del medio, permitiendo censar materiales no metálicos incluso detrás de paredes plásticas o de vidrio." },
+        { q: "En un sensor fotoeléctrico de tipo barrera (emisor y receptor enfrentados), ¿qué ocurre cuando un objeto opaco interrumpe el haz?", opts: ["Aumenta la frecuencia de resonancia del receptor", "El receptor deja de recibir luz y conmuta su salida lógica", "Se invierte la polaridad de la alimentación de 24 VDC", "El emisor pasa automáticamente a modo ultrasónico"], ans: 1, exp: "En el modo barrera, el haz viaja directo del emisor al receptor; la interrupción óptica provoca el cambio de estado de la salida." },
+        { q: "¿Qué fenómeno físico aprovecha una termocupla para generar una fuerza electromotriz proporcional a la diferencia de temperatura?", opts: ["Efecto piezoeléctrico", "Efecto Seebeck", "Efecto Hall", "Efecto fotoeléctrico interno"], ans: 1, exp: "El efecto Seebeck produce una tensión en milivoltios cuando dos metales distintos unidos en un extremo se someten a un gradiente térmico." },
+        { q: "¿Por qué se prefiere el estándar de transmisión analógica de 4–20 mA frente a 0–10 V en ambientes industriales con cables largos?", opts: ["Porque consume menos potencia en el transmisor", "Porque la corriente es inmune a caídas de tensión en el cable y el valor de 4 mA permite detectar rotura de línea (cero vivo)", "Porque no necesita fuente de alimentación externa", "Porque transmite datos digitales en código ASCII"], ans: 1, exp: "El lazo de corriente 4–20 mA mantiene la misma corriente en toda la serie, evita pérdidas por resistencia de línea y diferencia 0% (4 mA) de cable cortado (0 mA)." },
+        { q: "¿Cómo calcula la distancia un sensor ultrasónico industrial?", opts: ["Midiendo la atenuación de intensidad luminosa reflejada", "Midiendo el tiempo transcurrido entre la emisión de un pulso acústico y la recepción de su eco", "Detectando variaciones en el campo magnético terrestre", "Contando pulsos generados por una rueda dentada"], ans: 1, exp: "El sensor mide el tiempo de vuelo (ToF) del eco ultrasónico y calcula d = (v_sonido × t) / 2." },
+        { q: "¿Qué elemento primario de medición se adhiere a una celda de carga para convertir la deformación mecánica en variación de resistencia eléctrica?", opts: ["Termistor NTC", "Galgas extensiométricas (strain gauges) dispuestas en puente de Wheatstone", "Fotodiodo PIN", "Transformador diferencial LVDT"], ans: 1, exp: "Las galgas extensiométricas modifican su resistencia al estirarse o comprimirse y se conectan en puente de Wheatstone para obtener una señal diferencial en mV/V." },
+        { q: "¿Cuál es la función principal de un filtro pasa-bajos en la etapa de acondicionamiento de señal de un sensor?", opts: ["Amplificar la tensión de salida por un factor fijo de 100", "Atenuar el ruido eléctrico de alta frecuencia preservando la señal útil de proceso", "Convertir una señal analógica en un tren de pulsos PWM", "Rectificar corriente alterna de 220 VAC"], ans: 1, exp: "Los filtros pasa-bajos eliminan interferencias electromagnéticas de alta frecuencia antes de digitalizar o procesar la señal del sensor." },
+        { q: "¿Qué diferencia funcional existe entre un sensor fotoeléctrico difuso y uno réflex (con espejo catadióptrico)?", opts: ["El difuso detecta solo metales y el réflex solo líquidos", "El réflex utiliza un reflector prismático que devuelve luz polarizada y alcanza mayor distancia que el difuso", "El difuso requiere cableado trifásico", "No existe diferencia óptica entre ambos"], ans: 1, exp: "El sensor réflex usa un espejo catadióptrico (frecuentemente con filtro polarizador para evitar falsos disparos por superficies brillantes) logrando mayor alcance." },
+        { q: "¿Qué parámetro determina la histéresis en un sensor de proximidad todo/nada (ON/OFF)?", opts: ["La corriente máxima que soporta la carga conectada", "La diferencia de distancia entre el punto de activación al acercarse el objeto y el punto de desactivación al alejarse", "El tiempo de encendido inicial del sensor", "La tensión de ruptura inversa del diodo de protección"], ans: 1, exp: "La histéresis evita el rebote o conmutación errática cuando un objeto vibra justo en el límite de detección." },
+        { q: "¿Qué diferencia a un encoder incremental de un encoder absoluto?", opts: ["El incremental entrega pulsos relativos (canales A, B y Z) y pierde la posición al cortarse la energía; el absoluto entrega un código único por posición", "El absoluto solo mide velocidad lineal y el incremental temperatura", "El incremental usa señales de 4–20 mA y el absoluto 0–10 V", "El encoder absoluto no tiene disco óptico ni magnético"], ans: 0, exp: "El encoder absoluto codifica cada posición angular mediante pistas binarias o código Gray, conservando la posición exacta tras un corte de energía." },
+        { q: "¿Para qué se utilizan los canales A y B desfasados 90° eléctricos (en cuadratura) en un encoder incremental?", opts: ["Para duplicar la tensión de alimentación", "Para determinar el sentido de giro (horario o antihorario) además de contar pulsos", "Para compensar la temperatura ambiente del eje", "Para transmitir datos por protocolo RS-485"], ans: 1, exp: "Al observar qué flanco ocurre primero (A antes que B o B antes que A), el controlador determina el sentido de rotación." },
+        { q: "¿Qué tipo de salida tiene un sensor industrial PNP (sourcing)?", opts: ["Conmuta el terminal negativo (0 V / GND) hacia la carga", "Conmuta el terminal positivo (+24 VDC) hacia la entrada del PLC cuando se activa", "Entrega una resistencia variable entre 0 y 10 kΩ", "Funciona exclusivamente con corriente alterna"], ans: 1, exp: "Un sensor PNP suministra positivo (+24 V) por su cable de señal al activarse, cerrando circuito hacia el común negativo de la entrada." },
+        { q: "¿Qué sensor es más adecuado para detectar la posición de un émbolo magnético dentro de un cilindro neumático con camisa de aluminio?", opts: ["Sensor capacitivo de largo alcance", "Sensor magnético de efecto Hall o interruptor Reed montado sobre la ranura del cilindro", "Termocupla tipo J", "Sensor ultrasónico de barrera"], ans: 1, exp: "Los campos magnéticos atraviesan el aluminio del cilindro sin atenuarse, permitiendo detectar el imán del émbolo desde el exterior." },
+        { q: "¿Qué característica distingue a un termistor NTC respecto de un PTC?", opts: ["En el NTC la resistencia eléctrica disminuye al aumentar la temperatura", "En el NTC la resistencia aumenta linealmente con la temperatura", "El NTC es un sensor óptico infrarrojo sin contacto", "El NTC genera corriente continua proporcional a la presión"], ans: 0, exp: "NTC significa Coeficiente de Temperatura Negativo: al subir la temperatura, aumenta la concentración de portadores y cae su resistencia." },
+        { q: "¿Cuál es la definición correcta de 'transductor' en instrumentación industrial?", opts: ["Un dispositivo que convierte una magnitud física (temperatura, presión, fuerza) en otra forma de energía, generalmente eléctrica", "Un cable blindado para comunicaciones industriales", "Un relé electromecánico de alta potencia", "Un software de simulación de circuitos"], ans: 0, exp: "Un transductor transforma una variable física en una señal eléctrica medible o procesable por un sistema de control." },
+        { q: "¿Qué es la zona muerta (blind zone) en un sensor ultrasónico?", opts: ["La distancia máxima a la que deja de recibir ecos", "La distancia mínima frente a la cara del transductor dentro de la cual no puede detectar objetos con precisión", "El ángulo lateral fuera del cono acústico", "El tiempo de apagado entre dos mediciones"], ans: 1, exp: "Durante la emisión del pulso y la reverberación de la membrana piezoeléctrica, el sensor no puede escuchar ecos inmediatos." },
+        { q: "¿Qué ventaja tiene un sensor inductivo no enrasado (no blindado) frente a uno enrasado (blindado) del mismo diámetro?", opts: ["Mayor distancia nominal de detección (Sn) debido a que su campo magnético se expande lateralmente", "Puede montarse completamente embutido en acero sin interferencias", "Detecta materiales plásticos y madera", "No requiere alimentación eléctrica"], ans: 0, exp: "Al carecer de anillo de blindaje lateral en el núcleo de ferrita, el campo magnético sobresale más y logra mayor alcance, aunque exige zona libre metálica alrededor." },
+        { q: "¿Qué magnitud mide un transductor piezoeléctrico dinámico como un acelerómetro?", opts: ["Temperatura estática en hornos", "Variaciones rápidas de aceleración, vibración o presión mediante carga eléctrica generada por deformación de un cristal", "Nivel continuo de líquidos conductores", "Humedad relativa ambiente"], ans: 1, exp: "Los cristales piezoeléctricos generan carga eléctrica ante esfuerzos mecánicos dinámicos, siendo ideales para medir vibraciones y aceleraciones." },
+        { q: "¿Qué función cumple un amplificador de instrumentación en el acondicionamiento de un puente de Wheatstone?", opts: ["Amplificar la pequeña tensión diferencial del puente rechazando el ruido en modo común con alta impedancia de entrada", "Convertir corriente trifásica en continua", "Disminuir la resolución del conversor analógico-digital", "Generar ondas cuadradas de potencia para motores"], ans: 0, exp: "El amplificador de instrumentación ofrece alta relación de rechazo al modo común (CMRR) y alta impedancia para no cargar el puente." },
+        { q: "¿Qué indica la resolución de un conversor Analógico-Digital (ADC) de 12 bits conectado a un sensor de 0 a 10 V?", opts: ["Que puede medir hasta 12 sensores en paralelo", "Que divide el rango de 10 V en 4.096 niveles discretos (~2,44 mV por paso)", "Que tarda 12 segundos en realizar una lectura", "Que solo admite tensiones negativas"], ans: 1, exp: "Con 12 bits se obtienen 2^12 = 4.096 estados digitales, lo que equivale a 10 V / 4096 ≈ 2,44 mV por bit menos significativo." },
+        { q: "¿Cuál es una causa típica de fallo de lectura en un sensor fotoeléctrico difuso estándar?", opts: ["Detectar piezas de color negro mate que absorben la mayor parte de la luz emitida", "Detectar piezas de aluminio pulido a corta distancia", "Trabajar a temperaturas de 25 °C", "Estar alimentado con 24 VDC estabilizados"], ans: 0, exp: "Los objetos oscuros o mate tienen muy baja reflectividad, reduciendo drásticamente el alcance efectivo de los sensores difusos." }
+      ],
+      PSEINT: [
+        { q: "En PSeInt, ¿qué resultado devuelve la expresión `R <- trunc(17 / 5)`?", opts: ["3.4", "3", "2", "4"], ans: 1, exp: "La función `trunc()` extrae la parte entera de un número real descartando los decimales: `17 / 5 = 3.4` → `3`." },
+        { q: "¿Cuál es el valor almacenado en `X` luego de ejecutar `X <- 23 MOD 5` en PSeInt?", opts: ["4", "3", "4.6", "5"], ans: 1, exp: "El operador `MOD` calcula el resto de la división entera: `23 = 5 * 4 + 3`, por lo tanto el residuo es `3`." },
+        { q: "¿Qué función matemática integrada en PSeInt calcula la raíz cuadrada de un número no negativo?", opts: ["raiz2(x)", "rc(x)", "sqr(x)", "pot(x, 2)"], ans: 1, exp: "En PSeInt la función nativa para raíz cuadrada es `rc(x)`." },
+        { q: "¿Cuál es la diferencia fundamental entre los bucles `Mientras` y `Repetir ... Hasta Que` en PSeInt?", opts: ["`Mientras` evalúa la condición al inicio y puede ejecutarse 0 veces; `Repetir` evalúa al final y se ejecuta al menos 1 vez", "`Repetir` solo funciona con variables de tipo Caracter", "`Mientras` no permite operadores lógicos como `Y` u `O`", "No existe ninguna diferencia de ejecución entre ambos"], ans: 0, exp: "`Mientras` es un ciclo pre-condicional (0 o más iteraciones) y `Repetir ... Hasta Que` es post-condicional (1 o más iteraciones hasta que la condición sea verdadera)." },
+        { q: "En PSeInt, si se declara `Definir edad Como Entero;` y el usuario ingresa `25.8` durante un `Leer edad;`, ¿qué ocurre en perfil estricto?", opts: ["Lo redondea automáticamente a 26 sin avisar", "Produce un error en tiempo de ejecución por incompatibilidad de tipos de datos", "Lo convierte a cadena de texto", "Asigna el valor 0 por defecto"], ans: 1, exp: "En modo estricto, intentar asignar un valor decimal (Real) en una variable declarada `Como Entero` genera error de tipo." },
+        { q: "¿Para qué tipo de situaciones está diseñada la estructura `Segun variable Hacer` en PSeInt?", opts: ["Para repetir un bloque mientras una condición sea falsa", "Para seleccionar entre múltiples caminos discretos según el valor exacto de una expresión entera o de carácter", "Para ordenar arreglos unidimensionales automáticamente", "Para definir constantes globales del programa"], ans: 1, exp: "`Segun` implementa una selección múltiple limpia basada en valores puntuales, incluyendo la opción `De Otro Modo` para casos no contemplados." },
+        { q: "¿Cuántas veces se ejecutará el cuerpo del siguiente ciclo en PSeInt? `Para i <- 1 Hasta 10 Con Paso 3 Hacer`", opts: ["10 veces", "3 veces", "4 veces (valores de i: 1, 4, 7, 10)", "5 veces"], ans: 2, exp: "La variable `i` toma los valores `1`, `4`, `7` y `10` (4 iteraciones); en el siguiente paso `13 > 10` y finaliza el ciclo." },
+        { q: "¿Cuál es el operador correcto de asignación de valores a una variable en PSeInt?", opts: ["==", "<-", ":=", "=>"], ans: 1, exp: "PSeInt utiliza la flecha `<-` (o `=`) como operador de asignación, reservando `=` para comparaciones de igualdad." },
+        { q: "¿Qué devuelve la expresión lógica `(8 > 5) Y NO (4 = 4)` en PSeInt?", opts: ["Verdadero", "Falso", "Error de sintaxis", "1"], ans: 1, exp: "`(8 > 5)` es `Verdadero`; `(4 = 4)` es `Verdadero`, por lo que `NO (4 = 4)` es `Falso`. La conjunción `Verdadero Y Falso` resulta `Falso`." },
+        { q: "¿Qué instrucción se utiliza en PSeInt para mostrar un mensaje sin saltar de línea al final?", opts: ["Escribir Sin Saltar \"Ingrese valor: \";", "Mostrar Linea \"Ingrese valor: \";", "Imprimir Continuo \"Ingrese valor: \";", "Leer Sin Saltar \"Ingrese valor: \";"], ans: 0, exp: "La cláusula `Sin Saltar` junto a `Escribir` mantiene el cursor en la misma línea para que el `Leer` siguiente aparezca al lado." },
+        { q: "¿Qué resultado produce `redon(4.6)` en PSeInt?", opts: ["4", "5", "4.5", "0"], ans: 1, exp: "`redon(x)` redondea al entero más cercano; para `4.6` devuelve `5`." },
+        { q: "¿Qué hace la instrucción `Dimension notas[5];` en PSeInt?", opts: ["Declara una variable numérica con valor inicial 5", "Crea un arreglo (vector) llamado `notas` con capacidad para almacenar 5 elementos", "Define 5 subprocesos distintos", "Limita la ejecución del programa a 5 segundos"], ans: 1, exp: "`Dimension` reserva espacio en memoria para vectores o matrices de tamaño definido." },
+        { q: "¿Cuál de los siguientes tipos de datos NO es un tipo primitivo válido en PSeInt?", opts: ["Entero", "Real", "Logico", "Puntero"], ans: 3, exp: "Los cuatro tipos primitivos de PSeInt son `Entero`, `Real`, `Caracter` (o `Cadena`) y `Logico`." },
+        { q: "En una estructura `Repetir ... Hasta Que condicion`, ¿cuándo finaliza la repetición?", opts: ["Cuando `condicion` se vuelve Verdadera", "Cuando `condicion` se vuelve Falsa", "Siempre después de 10 vueltas", "Únicamente cuando se usa la instrucción `Romper`"], ans: 0, exp: "A diferencia de `Mientras` (que repite mientras sea verdadero), `Repetir ... Hasta Que` itera mientras sea falso y sale cuando la condición se cumple (Verdadero)." },
+        { q: "¿Qué función de PSeInt devuelve la cantidad de caracteres que contiene una variable de texto `nombre`?", opts: ["tamano(nombre)", "Longitud(nombre)", "Contar(nombre)", "Letras(nombre)"], ans: 1, exp: "`Longitud(cadena)` retorna un entero con el número de caracteres de la cadena." },
+        { q: "¿Qué valor final tendrá `acum` tras ejecutar: `acum <- 0; Para k <- 1 Hasta 4 Hacer acum <- acum + k; FinPara`?", opts: ["4", "6", "10", "24"], ans: 2, exp: "Suma los valores `1 + 2 + 3 + 4 = 10`." },
+        { q: "¿Cuál es la forma correcta de definir un subprograma en PSeInt que devuelve un valor calculado?", opts: ["Funcion resultado <- CalcularArea(b, h)", "SubProceso sin retorno CalcularArea()", "Metodo real CalcularArea(b, h)", "Algoritmo Secundario CalcularArea"], ans: 0, exp: "En PSeInt, `Funcion var_retorno <- Nombre(args)` permite devolver un resultado hacia el algoritmo invocador." },
+        { q: "¿Qué resultado devuelve `azar(10)` en PSeInt?", opts: ["Un número real entre 0.0 y 1.0", "Un número entero aleatorio entre 0 y 9", "Siempre el número 10", "Un número entero entre 1 y 100"], ans: 1, exp: "`azar(N)` genera un entero pseudoaleatorio en el rango `[0, N-1]` (para `N=10`, de `0` a `9`)." },
+        { q: "¿Para qué sirve la herramienta 'Prueba de escritorio' en PSeInt?", opts: ["Para traducir el algoritmo a lenguaje ensamblador", "Para observar paso a paso la evolución de los valores de las variables durante la ejecución", "Para verificar la conexión con un PLC Siemens", "Para comprimir el archivo .psc en formato ZIP"], ans: 1, exp: "La prueba de escritorio permite rastrear variable por variable en cada instrucción para detectar errores lógicos." },
+        { q: "¿Qué símbolo se utiliza en PSeInt para escribir un comentario de una línea que no afecta la ejecución?", opts: ["// Comentario", "/* Comentario", "-- Comentario", "# Comentario"], ans: 0, exp: "La doble barra `//` indica un comentario ignorado por el intérprete de PSeInt." },
+        { q: "¿Qué ocurre si en un ciclo `Mientras x < 5 Hacer` nunca se modifica el valor de `x` (siendo `x = 1`) dentro del bucle?", opts: ["PSeInt detiene el bucle automáticamente a los 5 segundos", "Se produce un bucle infinito", "La variable `x` se incrementa sola en cada iteración", "El programa salta directamente a `FinAlgoritmo`"], ans: 1, exp: "Si la variable de control no cambia de estado dentro del `Mientras`, la condición permanece siempre verdadera generando un ciclo infinito." },
+        { q: "¿Cuál es la precedencia correcta de evaluación aritmética en PSeInt (de mayor a menor prioridad)?", opts: ["Suma/Resta → Multiplicación/División → Potencia", "Potencia (`^`) → Multiplicación/División/MOD → Suma/Resta", "De izquierda a derecha sin importar el operador", "División → Suma → Potencia"], ans: 1, exp: "Al igual que en álgebra estándar, primero se evalúan paréntesis, luego potencias (`^`), después `*`, `/`, `MOD` y finalmente `+` y `-`." },
+        { q: "¿Qué devuelve `Subcadena(\"MECATRONICA\", 1, 4)` en PSeInt (con indexación base 1)?", opts: ["\"MECA\"", "\"ECAT\"", "\"NICA\"", "\"MECAT\""], ans: 0, exp: "Extrae los caracteres desde la posición 1 hasta la 4 inclusive: `\"MECA\"`." },
+        { q: "¿Cuál es la palabra clave obligatoria que cierra un bloque condicional iniciado con `Si ... Entonces` en PSeInt?", opts: ["EndIf", "FinSi", "CerrarSi", "FinCondicion"], ans: 1, exp: "Todo bloque condicional `Si` en PSeInt debe cerrarse explícitamente con `FinSi`." }
+      ],
+      ALGORITMOS: [
+        { q: "¿Cuáles son las tres propiedades esenciales que debe cumplir todo algoritmo formal?", opts: ["Ser gráfico, estar escrito en inglés y usar variables reales", "Ser preciso (orden claro de pasos), definido (mismo resultado ante iguales entradas) y finito (terminar en algún momento)", "Tener al menos tres bucles, un arreglo y una base de datos", "Ejecutarse únicamente en sistemas operativos Linux"], ans: 1, exp: "Un algoritmo válido debe ser preciso, determinista/definido y finito." },
+        { q: "En un diagrama de flujo estándar (norma ANSI/ISO), ¿qué figura geométrica representa una toma de decisión o bifurcación condicional?", opts: ["Rectángulo", "Óvalo", "Rombo", "Paralelogramo"], ans: 2, exp: "El rombo evalúa una expresión lógica con salidas típicamente etiquetadas como Verdadero/Sí y Falso/No." },
+        { q: "¿Qué símbolo de diagrama de flujo se utiliza para representar operaciones de Entrada o Salida de datos (Leer / Escribir)?", opts: ["Paralelogramo (romboide)", "Círculo pequeño", "Hexágono", "Triángulo invertido"], ans: 0, exp: "El paralelogramo representa operaciones de E/S, mientras que el rectángulo representa procesos internos." },
+        { q: "¿Qué diferencia conceptual existe entre una variable 'contador' y una variable 'acumulador'?", opts: ["El contador incrementa o decrementa en un valor constante (ej. `c <- c + 1`), mientras el acumulador suma cantidades variables (ej. `s <- s + nota`)", "El contador solo guarda textos y el acumulador solo booleanos", "El acumulador nunca necesita inicializarse antes de un ciclo", "Son exactamente sinónimos"], ans: 0, exp: "Un contador cuenta eventos con paso fijo; un acumulador totaliza valores distintos en cada iteración." },
+        { q: "Según las leyes de De Morgan en lógica booleana, ¿a qué equivale la negación `NO (A Y B)`?", opts: ["(NO A) Y (NO B)", "(NO A) O (NO B)", "A O B", "NO A"], ans: 1, exp: "La primera ley de De Morgan establece que negar una conjunción equivale a la disyunción de las negaciones: `¬(A ∧ B) ≡ ¬A ∨ ¬B`." },
+        { q: "¿Qué estructura de control fundamental permite ejecutar instrucciones una tras otra en el mismo orden en que fueron escritas?", opts: ["Estructura secuencial", "Estructura iterativa", "Estructura recursiva", "Estructura de selección múltiple"], ans: 0, exp: "El teorema de programación estructurada (Böhm-Jacopini) se basa en tres estructuras: secuencial, condicional (selección) e iterativa (repetición)." },
+        { q: "¿Qué ocurre si se omite inicializar en `0` una variable acumuladora antes de ingresar a un ciclo de suma?", opts: ["El resultado puede contener valores residuales ('basura') o provocar error de variable no inicializada", "El programa multiplica los valores en lugar de sumarlos", "El bucle se ejecuta una sola vez", "No tiene ningún impacto en el cálculo"], ans: 0, exp: "Todo acumulador o contador debe inicializarse explícitamente (en 0 para sumas, en 1 para productos) antes de operar sobre él." },
+        { q: "¿Qué técnica algorítmica consiste en dividir un problema complejo en subproblemas más pequeños e independientes (subrutinas/funciones)?", opts: ["Modularización (diseño descendente / Top-Down)", "Fuerza bruta secuencial", "Compilación cruzada", "Overclocking lógico"], ans: 0, exp: "La modularización mejora la legibilidad, reutilización y mantenimiento del código dividiendo la solución en módulos cohesivos." },
+        { q: "Para intercambiar los valores de dos variables `A` y `B` sin perder ninguno de los dos datos, ¿qué se necesita?", opts: ["Hacer `A <- B` y luego `B <- A`", "Utilizar una tercera variable auxiliar (`AUX <- A; A <- B; B <- AUX`)", "Sumar ambos valores y dividir por 2", "Usar un ciclo `Mientras`"], ans: 1, exp: "Si se asigna `A <- B` directamente, el valor original de `A` se sobrescribe; se requiere una variable temporal `AUX`." },
+        { q: "¿Cuál es la condición lógica correcta para verificar si un número `N` es par y positivo al mismo tiempo?", opts: ["(N MOD 2 = 0) O (N > 0)", "(N MOD 2 = 0) Y (N > 0)", "(N / 2 = 0) Y (N >= 0)", "NO (N MOD 2 = 0)"], ans: 1, exp: "Un número par tiene resto 0 al dividir por 2 (`N MOD 2 = 0`) y ser positivo exige `N > 0`; ambas condiciones deben cumplirse simultáneamente (`Y`)." },
+        { q: "¿Qué es una variable 'bandera' (flag) en el diseño de algoritmos?", opts: ["Una variable lógica (Verdadero/Falso) que registra si ocurrió un determinado evento o condición durante la ejecución", "El título principal del diagrama de flujo", "Un error de división por cero", "Un vector de caracteres constantes"], ans: 0, exp: "Las banderas actúan como indicadores de estado binario (por ejemplo, `encontrado <- Falso` que pasa a `Verdadero` al hallar un dato)." },
+        { q: "En el algoritmo de búsqueda del valor máximo dentro de una lista de `N` números, ¿con qué valor conviene inicializar la variable `maximo`?", opts: ["Siempre con `0` (incluso si todos los datos ingresados pueden ser negativos)", "Con el primer elemento válido ingresado de la lista", "Con `999999`", "Con la cantidad `N` de elementos"], ans: 1, exp: "Inicializar `maximo` con el primer dato real evita errores cuando todos los valores del conjunto son negativos." },
+        { q: "¿Qué representa un óvalo (terminal) en un diagrama de flujo?", opts: ["El inicio o el fin del algoritmo", "Una operación aritmética compleja", "Un bucle `Para`", "Una llamada a base de datos"], ans: 0, exp: "Los terminales ovalados marcan los puntos de entrada (`INICIO`) y salida (`FIN`) del flujo." },
+        { q: "¿Cuál es la diferencia entre un error de sintaxis y un error lógico en un algoritmo?", opts: ["El error de sintaxis viola las reglas del lenguaje e impide ejecutar; el error lógico permite ejecutar pero produce resultados incorrectos", "El error lógico solo ocurre cuando se corta la luz", "El error de sintaxis solo ocurre en diagramas de flujo", "Ambos son detectados automáticamente por el compilador"], ans: 0, exp: "Los errores lógicos (como usar `+` en vez de `-` o invertir `<` por `>`) son más sutiles porque el programa corre sin detenerse." },
+        { q: "¿Qué condición valida correctamente que una nota `x` esté fuera del rango válido de `0` a `10`?", opts: ["x >= 0 Y x <= 10", "x < 0 O x > 10", "x < 0 Y x > 10", "x <> 5"], ans: 1, exp: "Un valor está fuera de `[0, 10]` si es menor que 0 `O` mayor que 10 (es imposible que sea menor que 0 y mayor que 10 a la vez)." },
+        { q: "¿Qué es un 'valor centinela' en un ciclo controlado por evento?", opts: ["Un dato especial acordado (ej. `-1` o `0`) que ingresa el usuario para indicar que no hay más datos y finalizar la carga", "El promedio final de todos los datos procesados", "La primera línea de comentario del programa", "El tamaño máximo de memoria RAM"], ans: 0, exp: "El valor centinela permite terminar una carga de longitud desconocida sin preguntar previamente cuántos elementos se ingresarán." },
+        { q: "En lógica proposicional, ¿en qué único caso la operación de disyunción inclusiva `P O Q` resulta `Falso`?", opts: ["Cuando P es Verdadero y Q es Falso", "Cuando tanto P como Q son Falsos", "Cuando tanto P como Q son Verdaderos", "Nunca resulta Falso"], ans: 1, exp: "La disyunción `O` (OR) es verdadera si al menos una proposición es verdadera, y falsa únicamente cuando ambas son falsas." },
+        { q: "¿Qué ventaja principal ofrece el pseudocódigo frente a un lenguaje de programación comercial para aprender lógica?", opts: ["Permite centrarse en la estructura lógica del problema en lenguaje natural sin preocuparse por detalles complejos de sintaxis de máquina", "Ejecuta programas 100 veces más rápido que C++", "No requiere variables ni estructuras condicionales", "Genera directamente placas electrónicas PCB"], ans: 0, exp: "El pseudocódigo actúa como puente entre el razonamiento humano y la codificación formal." },
+        { q: "¿Qué orden lógico deben seguir las etapas básicas de procesamiento de datos en un algoritmo clásico?", opts: ["Salida → Proceso → Entrada", "Entrada → Proceso → Salida", "Proceso → Salida → Entrada", "Entrada → Salida → Proceso"], ans: 1, exp: "Todo sistema algorítmico recibe datos (Entrada), los transforma mediante operaciones (Proceso) y entrega resultados (Salida)." },
+        { q: "¿Qué ocurre en una estructura condicional anidada `Si C1 Entonces ... SiNo Si C2 Entonces ...` cuando `C1` es Verdadera y `C2` también es Verdadera?", opts: ["Se ejecutan ambos bloques en paralelo", "Se ejecuta únicamente el bloque correspondiente a `C1` y se omite la rama `SiNo`", "Se ejecuta únicamente el bloque de `C2`", "Se produce un error de ambigüedad"], ans: 1, exp: "En una estructura `Si ... SiNo`, al cumplirse la primera condición `C1` se ejecuta su rama y se descarta todo el bloque `SiNo`." },
+        { q: "¿Qué método de ordenamiento básico compara elementos adyacentes de un vector y los intercambia si están desordenados en múltiples pasadas?", opts: ["Ordenamiento por burbuja (Bubble Sort)", "Búsqueda binaria", "Transformada rápida de Fourier", "Cálculo de factorial"], ans: 0, exp: "El método de burbuja hace 'flotar' los valores mayores (o menores) hacia un extremo comparando pares contiguos." },
+        { q: "¿Qué requisito previo indispensable exige el algoritmo de 'búsqueda binaria' sobre un arreglo?", opts: ["Que el arreglo esté previamente ordenado", "Que todos los elementos sean números primos", "Que el arreglo tenga exactamente 10 elementos", "Que los valores sean cadenas de texto"], ans: 0, exp: "La búsqueda binaria descarta la mitad del arreglo en cada paso comparando con el elemento central, lo cual solo funciona si está ordenado." },
+        { q: "¿Cuál es la fórmula correcta para calcular un promedio aritmético evitando división por cero cuando `cont = 0`?", opts: ["Calcular `prom <- suma / cont` directamente sin verificar", "Evaluar `Si cont > 0 Entonces prom <- suma / cont SiNo Escribir \"Sin datos\" FinSi`", "Sumar 1 al contador siempre", "Multiplicar `suma * cont`"], ans: 1, exp: "Validar que el divisor sea mayor que cero previene excepciones matemáticas de división por cero." },
+        { q: "¿Qué representa una línea con flecha en un diagrama de flujo?", opts: ["La dirección y secuencia en que se ejecutan las operaciones", "Una operación de resta", "Un comentario explicativo", "El fin del programa"], ans: 0, exp: "Las líneas de flujo conectan los símbolos e indican el sentido de avance del control del algoritmo." }
+      ],
+      ELECTRONICA: [
+        { q: "Según la Ley de Ohm, si una resistencia de `220 Ω` está sometida a una diferencia de potencial de `11 V`, ¿qué corriente circula por ella?", opts: ["20 mA", "50 mA (0.05 A)", "2.42 A", "500 mA"], ans: 1, exp: "Aplicando `I = V / R`: `11 V / 220 Ω = 0.05 A = 50 mA`." },
+        { q: "¿Cuál es el valor óhmico de una resistencia de 4 bandas con colores: Marrón – Negro – Rojo – Dorado?", opts: ["100 Ω ± 5%", "1.000 Ω (1 kΩ) ± 5%", "10.000 Ω (10 kΩ) ± 10%", "120 Ω ± 5%"], ans: 1, exp: "Marrón (1), Negro (0), Multiplicador Rojo (×100 = 10²) → `10 × 100 = 1.000 Ω (1 kΩ)`, con tolerancia Dorado (±5%)." },
+        { q: "¿Qué función cumple un diodo volante (flyback o rueda libre) conectado en antiparalelo con la bobina de un relé?", opts: ["Aumentar la velocidad de cierre de los contactos", "Disipar el pico de tensión inversa (fuerza contraelectromotriz) generado al desconectar la bobina, protegiendo al transistor de disparo", "Rectificar la tensión de red de 220 VAC", "Limitar la corriente continua cuando el relé está encendido"], ans: 1, exp: "Al interrumpir la corriente en una inductancia (`V = -L di/dt`), se genera un pico de alta tensión inversa; el diodo ofrece un camino seguro de descarga." },
+        { q: "¿Para qué se utiliza un optoacoplador en las entradas y salidas digitales de un PLC o microcontrolador?", opts: ["Para amplificar señales de audio", "Para proporcionar aislamiento galvánico mediante luz infrarroja entre la etapa de control de baja tensión y la etapa de campo/potencia", "Para almacenar energía eléctrica como una batería", "Para medir temperatura ambiente"], ans: 1, exp: "El optoacoplador transfiere la señal ópticamente (LED + fototransistor), evitando que ruidos o sobretensiones de campo destruyan la CPU." },
+        { q: "En un divisor de tensión formado por dos resistencias iguales `R1 = 10 kΩ` y `R2 = 10 kΩ` alimentadas con `24 VDC`, ¿qué tensión se mide en el punto medio respecto a masa?", opts: ["24 VDC", "12 VDC", "6 VDC", "0 VDC"], ans: 1, exp: "`Vout = Vin × [R2 / (R1 + R2)] = 24 V × (10 / 20) = 12 VDC`." },
+        { q: "¿Cuál es la caída de tensión directa aproximada de un diodo rectificador de silicio estándar (como el 1N4007) en conducción?", opts: ["0.7 V", "3.3 V", "5.0 V", "0.05 V"], ans: 0, exp: "La barrera de potencial de una unión PN de silicio en polarización directa es de aproximadamente `0.6 V a 0.7 V`." },
+        { q: "¿Qué componente semiconductor trabaja en corte y saturación para actuar como interruptor electrónico controlado por corriente de base?", opts: ["Capacitor electrolítico", "Transistor bipolar (BJT)", "Varistor MOV", "Potenciómetro lineal"], ans: 1, exp: "En conmutación digital, el transistor BJT opera en corte (interruptor abierto, Ib = 0) y saturación (interruptor cerrado, Vce mínima)." },
+        { q: "¿Qué diferencia principal existe entre un transistor MOSFET de potencia y un transistor BJT respecto a su control?", opts: ["El MOSFET se controla por tensión aplicada en su compuerta (Gate) con impedancia de entrada muy alta, mientras el BJT se controla por corriente en la Base", "El MOSFET solo funciona con corriente alterna", "El BJT no tiene tres terminales", "El MOSFET no puede conmutar cargas inductivas"], ans: 0, exp: "La compuerta aislada por óxido (`SiO2`) del MOSFET exige prácticamente corriente continua nula en estado estacionario, controlándose por campo eléctrico (Vgs)." },
+        { q: "¿Qué precaución crítica debe tomarse al conectar un capacitor electrolítico de aluminio en un circuito de corriente continua?", opts: ["Respetar estrictamente su polaridad (+ y -) y no superar su tensión nominal máxima", "Conectarlo siempre en serie con la carga de potencia", "Cortocircuitar sus patas durante el funcionamiento", "Alimentarlo únicamente con corriente alterna sin rectificar"], ans: 0, exp: "Invertir la polaridad de un capacitor electrolítico degrada la capa dieléctrica de óxido, provocando calentamiento, fuga o explosión." },
+        { q: "¿Qué componente se utiliza como referencia estable de tensión operando en zona de ruptura inversa controlada?", opts: ["Diodo Zener", "Diodo túnel", "Tiristor SCR", "Fototransistor"], ans: 0, exp: "El diodo Zener mantiene una tensión prácticamente constante entre sus terminales cuando se polariza inversamente por encima de su tensión Vz." },
+        { q: "¿Cuál es la resistencia equivalente de dos resistencias de `100 Ω` conectadas en paralelo?", opts: ["200 Ω", "50 Ω", "100 Ω", "25 Ω"], ans: 1, exp: "Para dos resistencias iguales en paralelo: `Req = R / 2 = 100 Ω / 2 = 50 Ω`." },
+        { q: "¿Qué función cumple una resistencia de 'pull-down' conectada entre un pin de entrada digital de un microcontrolador y GND?", opts: ["Aumentar la corriente que entrega el pin de salida", "Fijar un nivel lógico BAJO (0 V) definido cuando el pulsador conectado a +Vcc está abierto, evitando entradas flotantes", "Reducir la frecuencia del reloj interno", "Convertir la entrada digital en analógica"], ans: 1, exp: "Sin una resistencia pull-down (o pull-up), un pin en alta impedancia capta ruido eléctrico y oscila aleatoriamente entre 0 y 1." },
+        { q: "¿Qué potencia eléctrica disipa una resistencia por la que circula una corriente de `0.2 A` con una caída de tensión de `15 V`?", opts: ["3 W", "75 W", "0.013 W", "15.2 W"], ans: 0, exp: "La potencia disipada es `P = V × I = 15 V × 0.2 A = 3 W`." },
+        { q: "¿Cuál es la secuencia correcta de etapas de una fuente de alimentación lineal regulada de corriente continua?", opts: ["Rectificación → Transformación → Regulación → Filtrado", "Transformación (reductor AC) → Rectificación (puente de diodos) → Filtrado (capacitor) → Regulación", "Filtrado → Regulación → Transformación → Rectificación", "Regulación → Rectificación → Filtrado → Transformación"], ans: 1, exp: "Primero se reduce la tensión alterna, luego se rectifica a pulsante, se filtra el rizado (ripple) con capacitores y finalmente se estabiliza con un regulador." },
+        { q: "¿Qué ventaja tiene una fuente de alimentación conmutada (switching) frente a una fuente lineal tradicional de igual potencia?", opts: ["Mayor rendimiento energético (menor disipación de calor), menor tamaño y menor peso", "No utiliza semiconductores ni capacitores", "Carece totalmente de rizado de alta frecuencia", "Funciona únicamente con pilas de 1.5 V"], ans: 0, exp: "Al operar los transistores en conmutación a alta frecuencia (decenas o cientos de kHz), el transformador de ferrita es compacto y las pérdidas son muy bajas." },
+        { q: "¿Qué resistencia limitadora se requiere para alimentar un LED rojo (`Vf = 2 V`, `If = 20 mA`) desde una fuente de `12 VDC`?", opts: ["100 Ω", "500 Ω (valor comercial 470 Ω o 560 Ω)", "2.4 kΩ", "60 Ω"], ans: 1, exp: "`R = (Vcc - Vf) / If = (12 V - 2 V) / 0.020 A = 10 V / 0.02 A = 500 Ω`." },
+        { q: "¿Qué característica diferencia a un relé de estado sólido (SSR) de un relé electromecánico convencional?", opts: ["El SSR realiza la conmutación mediante semiconductores (Triac/MOSFET) sin partes móviles ni arco mecánico", "El SSR funciona exclusivamente con aire comprimido", "El relé electromecánico tiene vida útil infinita en conmutaciones rápidas", "El SSR no ofrece aislamiento entre control y carga"], ans: 0, exp: "El SSR usa acoplamiento óptico y semiconductores de potencia, logrando millones de maniobras silenciosas sin desgaste de contactos." },
+        { q: "¿Cómo se comporta un capacitor ideal frente a la corriente continua (CC) una vez que ha alcanzado su carga completa?", opts: ["Como un cortocircuito perfecto", "Como un circuito abierto (bloquea el paso de corriente continua estacionaria)", "Como una fuente de corriente alterna", "Como una resistencia de 1 Ω"], ans: 1, exp: "En régimen permanente de CC (`dV/dt = 0`), la corriente capacitiva `I = C (dV/dt)` es cero, comportándose como circuito abierto." },
+        { q: "¿Qué indica la nomenclatura `104` impresa en un capacitor cerámico?", opts: ["104 pF", "100.000 pF = 100 nF (0.1 µF)", "104 µF", "10.4 nF"], ans: 1, exp: "Los dos primeros dígitos (`10`) seguidos de `4` ceros en picofaradios: `10 × 10⁴ pF = 100.000 pF = 100 nF`." },
+        { q: "¿Qué instrumento y forma de conexión deben emplearse para medir la corriente continua que consume un circuito sin dañarlo?", opts: ["Voltímetro en paralelo con la fuente", "Amperímetro conectado en serie con la rama a medir", "Óhmetro conectado con el circuito energizado", "Amperímetro en paralelo directo sobre los bornes de la batería"], ans: 1, exp: "Un amperímetro tiene impedancia interna muy baja y debe intercalarse en serie para que la corriente circule a través de él." },
+        { q: "¿Qué componente protege un circuito electrónico contra picos transitorios de sobretensión derivando energía a tierra cuando se supera un umbral de voltaje?", opts: ["Varistor de óxido metálico (MOV) o diodo TVS", "Inductor de núcleo de aire", "Potenciómetro multivuelta", "Cristal de cuarzo"], ans: 0, exp: "El varistor (MOV) y el diodo supresor TVS reducen drásticamente su impedancia ante sobretensiones transitorias, recortando el pico." },
+        { q: "¿Qué significa la sigla PWM en el control electrónico de potencia?", opts: ["Modulación por Ancho de Pulso (Pulse Width Modulation)", "Protección contra Voltaje Máximo", "Potencia Watts Medida", "Procesador Web Modular"], ans: 0, exp: "PWM varía el ciclo de trabajo (duty cycle) de una onda cuadrada de frecuencia fija para regular la potencia media entregada a motores, LEDs o calefactores." },
+        { q: "¿En qué configuración se conecta un amplificador operacional cuando su salida va unida directamente a la entrada inversora (`-`) y la señal entra por la no inversora (`+`)?", opts: ["Seguidor de tensión (buffer) con ganancia unitaria (Av = 1) y alta impedancia de entrada", "Comparador histéretico inversor", "Oscilador astable", "Integrador puro"], ans: 0, exp: "El seguidor de tensión acopla impedancias sin amplificar voltaje, evitando que una etapa de carga afecte a un sensor delicado." },
+        { q: "¿Qué ocurre en un puente rectificador de onda completa (4 diodos) durante cada semiciclo de la tensión alterna de entrada?", opts: ["Conducen dos diodos en serie manteniendo siempre la misma polaridad sobre la carga", "Conducen los cuatro diodos simultáneamente", "Solo se aprovecha el semiciclo positivo y se bloquea el negativo", "Se duplica la frecuencia a 120 Hz pero se invierte la polaridad"], ans: 0, exp: "En cada semiciclo conduce un par diagonal de diodos, rectificando ambos semiciclos con polaridad unidireccional constante." }
+      ],
+      AUTOMATIZACION: [
+        { q: "¿Cuál es la diferencia esencial entre un sistema de control en lazo abierto y uno en lazo cerrado?", opts: ["El lazo cerrado utiliza realimentación (feedback) de sensores para comparar la salida real con la referencia y corregir el error", "El lazo abierto es siempre más preciso ante perturbaciones externas", "El lazo cerrado no requiere actuadores", "El lazo abierto utiliza exclusivamente PLC y el cerrado relés"], ans: 0, exp: "La realimentación permite al controlador medir la variable controlada y ajustar la acción de control frente a perturbaciones." },
+        { q: "¿Cuál es la secuencia cíclica continua (ciclo de scan) que ejecuta el procesador de un PLC?", opts: ["Ejecutar programa → Leer entradas → Actualizar salidas", "Leer estado de entradas físicas → Ejecutar programa de usuario → Actualizar salidas físicas (más tareas de diagnóstico/comunicación)", "Actualizar salidas → Borrar memoria → Leer entradas", "Compilar código → Reiniciar CPU → Leer sensores"], ans: 1, exp: "El PLC realiza una imagen de proceso de entradas, resuelve la lógica del programa de arriba hacia abajo y luego escribe la imagen de salidas." },
+        { q: "¿A qué se denominan 'Grados de Libertad' (GDL / DOF) en un brazo robótico articulado?", opts: ["Al ángulo máximo que puede girar la pinza neumática", "Al número de movimientos independientes (articulaciones rotacionales o prismáticas) que posee el manipulador para posicionar y orientar su extremo", "A la capacidad máxima de carga en kilogramos", "A la cantidad de sensores conectados al controlador"], ans: 1, exp: "Para posicionar (3 coordenadas X, Y, Z) y orientar (3 ángulos roll, pitch, yaw) un cuerpo libremente en el espacio 3D se requieren 6 GDL." },
+        { q: "¿Qué función cumple una válvula distribuidora neumática `5/2` biestable en un circuito electroneumático?", opts: ["Regular el caudal de aire en un solo sentido", "Comandar un cilindro de doble efecto mediante 5 vías y 2 posiciones estables, manteniendo su último estado ante un corte eléctrico", "Filtrar partículas de agua del compresor", "Controlar un cilindro de simple efecto con retorno por muelle"], ans: 1, exp: "Posee 5 puertos (presión, 2 escapes y 2 utilizaciones) y 2 posiciones con doble bobina/piloto, conservando su posición sin energía continua." },
+        { q: "¿Qué es el 'efector final' (end-effector) en un robot industrial?", opts: ["El motor principal de la base del robot", "El dispositivo acoplado en la muñeca del robot para interactuar con la pieza o proceso (pinza/gripper, antorcha de soldadura, ventosa de vacío)", "El cable de alimentación trifásica del gabinete", "El botón de parada de emergencia de la consola"], ans: 1, exp: "El efector final es la herramienta específica montada en el extremo del manipulador para ejecutar la tarea productiva." },
+        { q: "En un controlador PID industrial, ¿qué acción elimina el error en estado estacionario (offset) acumulando el error a lo largo del tiempo?", opts: ["Acción Proporcional (P)", "Acción Integral (I)", "Acción Derivativa (D)", "Ganancia de lazo abierto"], ans: 1, exp: "La acción Integral suma el error en el tiempo, incrementando la salida hasta anular completamente la desviación permanente respecto al setpoint." },
+        { q: "¿Qué diferencia a un cilindro neumático de simple efecto respecto a uno de doble efecto?", opts: ["El de simple efecto recibe aire comprimido en un solo sentido y retorna mediante un resorte interno o fuerza externa; el de doble efecto usa aire para ambos movimientos", "El de simple efecto desarrolla el doble de fuerza de retroceso", "El de doble efecto no necesita válvulas de control", "El de simple efecto funciona con aceite hidráulico a 300 bar"], ans: 0, exp: "En el cilindro de simple efecto solo una cámara se presuriza, mientras el retorno depende de un muelle integrado." },
+        { q: "¿Qué lenguaje de programación gráfica de PLC según la norma IEC 61131-3 representa la lógica mediante contactos y bobinas similares a esquemas eléctricos de relés?", opts: ["Texto Estructurado (ST)", "Diagrama de Contactos / Escalera (Ladder - LD)", "Lista de Instrucciones (IL)", "C++ embebido"], ans: 1, exp: "Ladder (LD) facilita la transición de técnicos electricistas al representar rieles de alimentación, contactos NA/NC y bobinas." },
+        { q: "¿Qué problema resuelve la 'cinemática inversa' en la programación de un robot manipulador?", opts: ["Calcular la posición del efector final a partir de los ángulos conocidos de cada articulación", "Calcular los ángulos o desplazamientos que debe adoptar cada articulación para que el efector final alcance una posición y orientación deseadas en el espacio", "Medir la corriente consumida por los servomotores", "Detectar colisiones mediante visión artificial"], ans: 1, exp: "Mientras la cinemática directa va de articulaciones a coordenadas cartesianas, la inversa calcula las variables articulares necesarias para llegar a un punto objetivo." },
+        { q: "¿Para qué sirve un variador de frecuencia (VFD) conectado a un motor asíncrono trifásico de inducción?", opts: ["Para convertir corriente continua en monofásica fija", "Para controlar la velocidad de giro y el par del motor variando simultáneamente la frecuencia y la tensión de alimentación (relación V/f)", "Para frenar mecánicamente el eje mediante zapatas", "Para medir la presión de aire de la planta"], ans: 1, exp: "La velocidad síncrona de un motor de CA depende de la frecuencia (`Ns = 120·f / p`); el VFD regula `f` y `V` manteniendo el flujo magnético constante." },
+        { q: "¿Qué función cumple la unidad FRL (unidad de mantenimiento) en la entrada de una instalación neumática?", opts: ["Filtrar impurezas y condensado, Regular la presión de trabajo y Lubricar el aire comprimido si el sistema lo requiere", "Frenar, Rectificar y Limitar la corriente eléctrica", "Medir el caudal de agua de refrigeración", "Comprimir el aire desde 1 bar hasta 10 bar"], ans: 0, exp: "La unidad FRL acondiciona el aire comprimido para proteger válvulas y cilindros contra humedad, partículas y sobrepresión." },
+        { q: "¿Qué tipo de robot industrial se caracteriza por tener dos brazos rotacionales en un plano horizontal y un eje vertical prismático (alta velocidad en ensamblaje pick-and-place)?", opts: ["Robot SCARA", "Robot cartesiano de pórtico", "Robot submarino ROV", "Vehículo guiado automáticamente (AGV)"], ans: 0, exp: "SCARA (Selective Compliance Assembly Robot Arm) ofrece rigidez vertical y gran rapidez horizontal para tareas de inserción y ensamblaje." },
+        { q: "¿Qué característica tiene un servomotor frente a un motor paso a paso utilizado en lazo abierto?", opts: ["El servomotor incorpora un sensor de realimentación (encoder/resolver) en lazo cerrado que corrige errores de posición y evita pérdida de pasos", "El servomotor no tiene escobillas ni imanes permanentes", "El motor paso a paso es siempre más rápido a altas RPM", "El servomotor no requiere controlador electrónico"], ans: 0, exp: "Los servosistemas operan en lazo cerrado de posición, velocidad y corriente, garantizando precisión dinámica incluso ante variaciones de carga." },
+        { q: "¿Qué es el 'espacio de trabajo' (workspace) de un brazo robótico?", opts: ["La oficina donde se programan los PLC", "El volumen geométrico tridimensional que puede alcanzar el extremo de la muñeca del robot con sus articulaciones", "El tamaño de la memoria interna del controlador", "El tiempo de ciclo de una línea de producción"], ans: 1, exp: "El espacio de trabajo define la envolvente física accesible por el robot y condiciona el layout de la celda robotizada." },
+        { q: "En sistemas SCADA / HMI industriales, ¿qué significado tiene la sigla HMI?", opts: ["Interfaz Hombre-Máquina (Human-Machine Interface)", "Herramienta Mecánica Integrada", "Histeresis Magnética Inducida", "Hardware Modular Industrial"], ans: 0, exp: "La HMI permite al operador visualizar estados de proceso, alarmas, tendencias y enviar consignas al PLC." },
+        { q: "¿Cómo debe conectarse eléctricamente un pulsador de Parada de Emergencia (seta roja) a una entrada de seguridad de un sistema automatizado?", opts: ["Mediante contactos Normalmente Cerrados (NC) de apertura positiva, de modo que ante rotura de cable o pulsación se interrumpa el circuito (seguridad positiva)", "Mediante contactos Normalmente Abiertos (NA) en paralelo con el arranque", "Sin pasar por ningún relé ni módulo de seguridad", "Conectado únicamente al puerto USB de la PC"], ans: 0, exp: "El criterio fail-safe exige contactos NC: tanto pulsar la seta como cortar un cable abren el lazo y detienen la máquina de forma segura." },
+        { q: "¿Qué acción del controlador PID anticipa la tendencia futura del error midiendo su velocidad de cambio (`de/dt`) y amortigua las oscilaciones?", opts: ["Acción Derivativa (D)", "Acción Integral (I)", "Banda muerta", "Histéresis de salida"], ans: 0, exp: "La acción Derivativa responde a la pendiente del error, aportando amortiguamiento y reduciendo el sobreimpulso (overshoot)." },
+        { q: "¿En qué nivel de la pirámide de automatización industrial se ubican los sensores y actuadores de campo?", opts: ["Nivel 0 / Nivel de Campo (base de la pirámide)", "Nivel 4 / Gestión Empresarial (ERP)", "Nivel 3 / Ejecución de Manufactura (MES)", "Nivel 2 / Supervisión SCADA"], ans: 0, exp: "La base de la pirámide (Nivel de Campo) comprende sensores, transductores y actuadores que interactúan físicamente con el proceso." },
+        { q: "¿Qué ventaja principal ofrece un sistema hidráulico frente a uno neumático en maquinaria pesada?", opts: ["Capacidad de generar fuerzas y pares extremadamente elevados con gran rigidez y precisión de posicionamiento gracias a la incompresibilidad del fluido", "Es mucho más limpio y no requiere tuberías de retorno", "Alcanza velocidades superiores al sonido", "No requiere bomba ni depósito de fluido"], ans: 0, exp: "Al trabajar con aceites prácticamente incompresibles a altas presiones (100–350 bar), la hidráulica desarrolla enormes fuerzas." },
+        { q: "¿Qué función cumple una válvula reguladora de caudal unidireccional (estranguladora con antirretorno) instalada en el escape de un cilindro neumático?", opts: ["Controlar suavemente la velocidad de avance o retroceso del vástago (regulación primaria/secundaria)", "Duplicar la presión de línea del compresor", "Convertir el cilindro de doble efecto en simple efecto", "Silenciar el ruido del compresor"], ans: 0, exp: "Al estrangular el aire de salida (regulación secundaria), se crea un colchón de contrapresión que evita movimientos a saltos (stick-slip)." },
+        { q: "¿Qué es un robot colaborativo (cobot)?", opts: ["Un robot diseñado con limitación de fuerza/potencia, sensores de torque y bordes redondeados para compartir espacio de trabajo seguro con operarios humanos sin rejas perimetrales", "Un robot que solo puede funcionar bajo el agua", "Un software que redacta correos electrónicos", "Un robot cartesiano de más de 5 toneladas de carga"], ans: 0, exp: "Los cobots integran monitoreo de colisiones y control de par en cada articulación para colaborar de forma segura junto a personas." },
+        { q: "¿Qué función cumple un temporizador con retardo a la conexión (`TON`) en la programación de un PLC?", opts: ["Activa su salida recién después de que la entrada habilitadora permanece verdadera durante un tiempo preestablecido (PT)", "Desactiva la salida inmediatamente y la mantiene apagada para siempre", "Cuenta cuántas veces se encendió el PLC en el año", "Convierte señales analógicas en digitales"], ans: 0, exp: "El bloque `TON` (Timer On-Delay) retarda la puesta a `1` de su bit de salida `Q` hasta alcanzar el tiempo `PT`." },
+        { q: "¿Cuál es la diferencia entre un contactor electromagnético y un relé auxiliar de maniobra?", opts: ["El contactor está diseñado con cámaras apagachispas y contactos principales robustos para conmutar cargas de potencia (motores, calefactores), mientras el relé maneja señales de mando de baja corriente", "El contactor no tiene bobina electromagnética", "El relé auxiliar soporta corrientes trifásicas de 400 A", "No existe ninguna diferencia constructiva"], ans: 0, exp: "Los contactores poseen contactos de potencia preparados para soportar arcos eléctricos de arranque de motores y contactos auxiliares de control." },
+        { q: "¿Qué parámetro define la 'repetibilidad' de un robot industrial?", opts: ["La precisión con la que el robot logra volver repetidamente a un mismo punto previamente enseñado bajo las mismas condiciones", "El costo anual de mantenimiento", "La cantidad de programas almacenados en su memoria", "La velocidad máxima de comunicación Ethernet"], ans: 0, exp: "La repetibilidad (típicamente ±0,02 mm a ±0,1 mm) mide la dispersión al regresar a una posición registrada." }
+      ]
+    };
+
+    // =========================================================================
+    // 2. GENERADOR ALEATORIO DETERMINISTA DE EXÁMENES POR ALUMNO
+    //    - Usa el id del alumno (+ examSeed opcional) como semilla
+    //    - Toma 2 preguntas al azar de cada eje (sin repetir dentro del eje)
+    //    - 10 preguntas ordenadas también al azar
+    // =========================================================================
+    function mulberry32(seed) {
+      return function() {
+        seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+        let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function hashSeed(str) {
+      let h = 2166136261;
+      const s = String(str);
+      for (let i = 0; i < s.length; i++) {
+        h ^= s.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return h >>> 0;
+    }
+
+    function shuffleWithPRNG(arr, rng) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    const examCache = new Map();
+    const CACHE_VERSION = "v2";
+
+    function getQuestionsForStudent(studentId) {
+      const cacheKey = `${CACHE_VERSION}_${studentId}`;
+      if (examCache.has(cacheKey)) return examCache.get(cacheKey);
+
+      const st = state.students.find(s => s.id === studentId);
+      const seedPart = (st && st.examSeed) ? `-${st.examSeed}` : "";
+      const rng = mulberry32(hashSeed(`CEI-EVAL-2026-STU-${studentId}-${CACHE_VERSION}${seedPart}`));
+
+      const selected = [];
+      TOPIC_KEYS.forEach((key) => {
+        const bank = QUESTION_BANK[key];
+        const indices = shuffleWithPRNG(bank.map((_, i) => i), rng).slice(0, 2);
+        indices.forEach((qi) => {
+          selected.push({
+            uid: `${key}_${qi}`,
+            topicKey: key,
+            topicName: TOPICS[key],
+            ...bank[qi]
+          });
+        });
+      });
+
+      const finalList = shuffleWithPRNG(selected, rng);
+      examCache.set(cacheKey, finalList);
+      return finalList;
+    }
+
+    // =========================================================================
+    // 3. ESTADO GLOBAL (NÓMINA VACÍA, 12 PUESTOS)
+    // =========================================================================
+    const TOTAL_PUESTOS = 12;
+    const DEFAULT_STUDENTS = Array.from({ length: TOTAL_PUESTOS }, (_, i) => ({
+      id: i + 1,
+      name: "",
+      dni: "",
+      comision: "",
+      active: true,
+      notes: "",
+      status: "empty",
+      answers: {},
+      flags: {},
+      timeLeft: 600,
+      startedAt: null,
+      submittedAt: null,
+      score: null,
+      correct: 0,
+      wrong: 0,
+      unanswered: 10,
+      timeUsed: 0,
+      receiptCode: null,
+      examSeed: null
+    }));
+
+    let state = {
+      students: JSON.parse(localStorage.getItem("cei_eval_students") || "null") || DEFAULT_STUDENTS.map(s => ({ ...s })),
+      currentStudentId: null,
+      correctionMode: localStorage.getItem("cei_eval_mode") || "instant",
+      soundEnabled: localStorage.getItem("cei_eval_sound") !== "false",
+      darkMode: localStorage.getItem("cei_eval_dark") === "true",
+      teacherPin: localStorage.getItem("cei_eval_pin") || "1234",
+      institution: "Instituto Superior Nivel Terciario • Mecatrónica",
+      subject: "Evaluación Interactiva — Automatización y Mecatrónica",
+      teacher: "Prof. Dardo Bautista",
+      dateText: "Noviembre 2026",
+      timerInterval: null,
+      currentExamQuestions: [],
+      questionFilter: "all"
+    };
+
+    // =========================================================================
+    // 4. PERSISTENCIA
+    // =========================================================================
+    function saveState() {
+      localStorage.setItem("cei_eval_students", JSON.stringify(state.students));
+      localStorage.setItem("cei_eval_mode", state.correctionMode);
+      localStorage.setItem("cei_eval_sound", state.soundEnabled);
+      localStorage.setItem("cei_eval_dark", state.darkMode);
+      localStorage.setItem("cei_eval_pin", state.teacherPin);
+    }
+
+    // =========================================================================
+    // 5. UTILIDADES
+    // =========================================================================
+    function showToast(msg, type = "info") {
+      const container = document.getElementById("toastContainer");
+      const colors = { success: "bg-emerald-600", error: "bg-rose-600", warning: "bg-amber-600", info: "bg-slate-800" };
+      const toast = document.createElement("div");
+      toast.className = `${colors[type] || colors.info} text-white px-4 py-2.5 rounded-xl shadow-lg text-sm font-semibold pointer-events-auto animate-fade-in`;
+      toast.textContent = msg;
+      container.appendChild(toast);
+      setTimeout(() => { toast.style.opacity = "0"; setTimeout(() => toast.remove(), 300); }, 3000);
+    }
+
+    function formatTime(seconds) {
+      const s = Math.max(0, Math.floor(seconds));
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      return `${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add("hidden");
+    }
+
+    // =========================================================================
+    // 6. NAVEGACIÓN Y TEMA
+    // =========================================================================
+    function navigateTo(view) {
+      ["viewHome", "viewExam", "viewTeacher"].forEach(id => {
+        document.getElementById(id).classList.add("hidden");
+      });
+      const target = { home: "viewHome", exam: "viewExam", teacher: "viewTeacher" }[view];
+      if (target) document.getElementById(target).classList.remove("hidden");
+      if (view === "teacher") renderTeacherDashboard();
+      if (view === "home") renderStudentCards();
+    }
+
+    function toggleDarkMode() {
+      state.darkMode = !state.darkMode;
+      document.documentElement.classList.toggle("dark", state.darkMode);
+      saveState();
+    }
+
+    function toggleSound() {
+      state.soundEnabled = !state.soundEnabled;
+      document.getElementById("iconSoundOn").classList.toggle("hidden", !state.soundEnabled);
+      document.getElementById("iconSoundOff").classList.toggle("hidden", state.soundEnabled);
+      saveState();
+      showToast(state.soundEnabled ? "Sonido activado" : "Sonido silenciado", "info");
+    }
+
+    // =========================================================================
+    // 7. AUTENTICACIÓN DOCENTE
+    // =========================================================================
+    function openPinModal() {
+      document.getElementById("pinModal").classList.remove("hidden");
+      document.getElementById("pinInput").value = "";
+      document.getElementById("pinError").classList.add("hidden");
+      setTimeout(() => document.getElementById("pinInput").focus(), 100);
+    }
+
+    function verifyPin() {
+      const val = document.getElementById("pinInput").value.trim();
+      if (val === state.teacherPin) {
+        closeModal("pinModal");
+        navigateTo("teacher");
+      } else {
+        document.getElementById("pinError").classList.remove("hidden");
+      }
+    }
+
+    // =========================================================================
+    // 8. RENDERIZADO DE NÓMINA (INICIO)
+    // =========================================================================
+    function renderStudentCards() {
+      const grid = document.getElementById("studentCardsGrid");
+      if (!grid) return;
+
+      const cargados = state.students.filter(s => s.name.trim() !== "").length;
+      document.getElementById("rosterCountBadge").textContent = `${cargados} cargados / ${TOTAL_PUESTOS} puestos`;
+
+      grid.innerHTML = state.students.map(st => {
+        const isEmpty = st.name.trim() === "";
+
+        if (isEmpty) {
+          return `
+            <div class="bg-white dark:bg-slate-800 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 p-4 flex flex-col items-center justify-center min-h-[160px] hover:border-indigo-400 transition">
+              <span class="text-xs font-bold text-slate-400 uppercase mb-2">Puesto #${st.id} libre</span>
+              <button onclick="openEditStudentModal(${st.id}, 'home')"
+                class="px-4 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-800/60 transition text-sm font-bold flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                Agregar alumno
+              </button>
+            </div>
+          `;
+        }
+
+        const statusColor = st.status === "submitted" ? "emerald" : st.status === "in_progress" ? "amber" : "slate";
+        const statusLabel = st.status === "submitted" ? "✔ Entregado" : st.status === "in_progress" ? "● En curso" : "○ Sin iniciar";
+
+        return `
+          <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 space-y-2 hover:shadow-md transition">
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 rounded-md text-xs font-bold bg-navy-900 dark:bg-indigo-600 text-white">PUESTO #${st.id}</span>
+              ${!st.active ? '<span class="text-[10px] text-rose-600 font-bold uppercase">Inactivo</span>' : ''}
+            </div>
+            <div>
+              <h4 class="font-bold text-sm text-slate-900 dark:text-white truncate">${st.name}</h4>
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-mono">${st.dni || 'Sin DNI'}</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">${st.comision || 'Sin comisión'}</p>
+            </div>
+            <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700">
+              <span class="text-xs font-semibold text-${statusColor}-600 dark:text-${statusColor}-400">${statusLabel}</span>
+              <div class="flex gap-1">
+                <button onclick="startExam(${st.id})" ${!st.active ? 'disabled' : ''} title="Rendir"
+                  class="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed">▶</button>
+                <button onclick="openEditStudentModal(${st.id}, 'home')" title="Editar"
+                  class="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 text-xs">✎</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // =========================================================================
+    // 9. MODAL EDITAR ALUMNO
+    // =========================================================================
+    function openEditStudentModal(id, context = "home") {
+      const st = state.students.find(s => s.id === id);
+      if (!st) return;
+      document.getElementById("editStudentId").value = id;
+      document.getElementById("editStudentContext").value = context;
+      document.getElementById("editStudentName").value = st.name || "";
+      document.getElementById("editStudentDni").value = st.dni || "";
+      document.getElementById("editStudentComision").value = st.comision || "";
+      document.getElementById("editStudentActive").checked = st.active !== false;
+      document.getElementById("editStudentNotes").value = st.notes || "";
+      document.getElementById("editModalTitle").textContent = st.name ? `Editar Puesto #${id}` : `Agregar Alumno — Puesto #${id}`;
+      document.getElementById("editTeacherExtraFields").style.display = (context === "teacher" && st.name) ? "block" : "none";
+      document.getElementById("editStudentModal").classList.remove("hidden");
+      setTimeout(() => document.getElementById("editStudentName").focus(), 100);
+    }
+
+    function saveStudentEdit() {
+      const id = parseInt(document.getElementById("editStudentId").value);
+      const st = state.students.find(s => s.id === id);
+      if (!st) return;
+      const name = document.getElementById("editStudentName").value.trim();
+      st.name = name;
+      st.dni = document.getElementById("editStudentDni").value.trim();
+      st.comision = document.getElementById("editStudentComision").value.trim();
+      st.active = document.getElementById("editStudentActive").checked;
+      st.notes = document.getElementById("editStudentNotes").value.trim();
+      st.status = name ? (st.status === "empty" ? "not_started" : st.status) : "empty";
+
+      saveState();
+      renderAll();
+      closeModal("editStudentModal");
+      showToast(name ? `Datos guardados: ${name}` : "Puesto liberado", "success");
+    }
+
+    function resetStudentFromEditModal() {
+      const id = parseInt(document.getElementById("editStudentId").value);
+      const st = state.students.find(s => s.id === id);
+      if (!st) return;
+      if (!confirm(`¿Reiniciar intento de ${st.name || "Puesto #" + id}?`)) return;
+      st.answers = {};
+      st.flags = {};
+      st.timeLeft = 600;
+      st.timeUsed = 0;
+      st.score = null;
+      st.correct = 0;
+      st.wrong = 0;
+      st.unanswered = 10;
+      st.status = st.name ? "not_started" : "empty";
+      st.startedAt = null;
+      st.submittedAt = null;
+      st.receiptCode = null;
+      examCache.delete(`${CACHE_VERSION}_${id}`);
+      saveState();
+      renderAll();
+      closeModal("editStudentModal");
+      showToast("Intento reiniciado", "warning");
+    }
+
+    function regenerateExamForStudent() {
+      const id = parseInt(document.getElementById("editStudentId").value);
+      const st = state.students.find(s => s.id === id);
+      if (!st) return;
+      if (!confirm(`¿Regenerar preguntas para ${st.name || "Puesto #" + id}? Se reiniciará el intento.`)) return;
+
+      examCache.delete(`${CACHE_VERSION}_${id}`);
+      st.examSeed = Date.now();
+      st.answers = {};
+      st.flags = {};
+      st.timeLeft = 600;
+      st.timeUsed = 0;
+      st.score = null;
+      st.correct = 0;
+      st.wrong = 0;
+      st.unanswered = 10;
+      st.status = st.name ? "not_started" : "empty";
+      st.startedAt = null;
+      st.submittedAt = null;
+      st.receiptCode = null;
+
+      saveState();
+      renderAll();
+      closeModal("editStudentModal");
+      showToast("Set de preguntas regenerado", "success");
+    }
+
+    // =========================================================================
+    // 10. RENDERIZADO DEL EXAMEN
+    // =========================================================================
+    function startExam(studentId) {
+      const st = state.students.find(s => s.id === studentId);
+      if (!st || !st.active) {
+        showToast("Puesto deshabilitado", "error");
+        return;
+      }
+      if (!st.name.trim()) {
+        showToast("Primero cargá el nombre del alumno", "warning");
+        openEditStudentModal(studentId, "home");
+        return;
+      }
+
+      state.currentStudentId = studentId;
+      state.currentExamQuestions = getQuestionsForStudent(studentId);
+      state.questionFilter = "all";
+
+      if (!st.startedAt && st.status !== "submitted") {
+        st.startedAt = Date.now();
+        st.status = "in_progress";
+        st.timeLeft = 600;
+        saveState();
+      }
+
+      document.getElementById("viewHome").classList.add("hidden");
+      document.getElementById("viewTeacher").classList.add("hidden");
+      document.getElementById("viewExam").classList.remove("hidden");
+      renderExamView();
+      startTimer();
+    }
+
+    function renderExamView() {
+      const st = state.students.find(s => s.id === state.currentStudentId);
+      if (!st) return;
+
+      document.getElementById("examBadgeId").textContent = `PUESTO #${st.id}`;
+      document.getElementById("examComisionBadge").textContent = st.comision || "Sin comisión";
+      document.getElementById("examInlineName").value = st.name;
+      document.getElementById("examInlineDni").value = st.dni;
+
+      const isSubmitted = st.status === "submitted";
+      document.getElementById("examStatusBadge").textContent = isSubmitted ? "Entregado" : "En curso";
+      document.getElementById("examStatusBadge").className = isSubmitted
+        ? "px-2.5 py-0.5 rounded-md text-xs font-semibold bg-emerald-100 text-emerald-800"
+        : "px-2.5 py-0.5 rounded-md text-xs font-semibold bg-amber-100 text-amber-800";
+
+      updateLiveMetrics();
+      renderQuestionNavPills();
+      renderQuestions();
+      updateTimerDisplay();
+
+      if (isSubmitted) {
+        showFinalSummary();
+      } else {
+        document.getElementById("examFinalSummary").classList.add("hidden");
+      }
+    }
+
+    function renderQuestionNavPills() {
+      const st = state.students.find(s => s.id === state.currentStudentId);
+      const container = document.getElementById("questionNavPills");
+      if (!st || !container) return;
+
+      container.innerHTML = state.currentExamQuestions.map((q, i) => {
+        const answered = st.answers[q.uid] !== undefined;
+        const isCorrect = answered && st.answers[q.uid] === q.ans;
+        const cls = !answered
+          ? "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200"
+          : (isCorrect && state.correctionMode === "instant")
+            ? "bg-emerald-500 text-white"
+            : (state.correctionMode === "instant")
+              ? "bg-rose-500 text-white"
+              : "bg-indigo-500 text-white";
+        return `<button onclick="scrollToQuestion(${i})" class="w-7 h-7 rounded-lg text-xs font-bold ${cls} transition">${i + 1}</button>`;
+      }).join("");
+    }
+
+    function scrollToQuestion(idx) {
+      const el = document.getElementById(`question-${idx}`);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function renderQuestions() {
+      const st = state.students.find(s => s.id === state.currentStudentId);
+      const container = document.getElementById("questionsContainer");
+      if (!st || !container) return;
+
+      const isSubmitted = st.status === "submitted";
+      let questions = state.currentExamQuestions;
+
+      if (state.questionFilter === "unanswered") {
+        questions = questions.filter(q => st.answers[q.uid] === undefined);
+      }
+
+      if (questions.length === 0) {
+        container.innerHTML = `<div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 text-center text-slate-500">No hay preguntas en este filtro.</div>`;
+        return;
+      }
+
+      container.innerHTML = questions.map((q) => {
+        const idx = state.currentExamQuestions.indexOf(q);
+        const selected = st.answers[q.uid];
+        const answered = selected !== undefined;
+        const showFeedback = state.correctionMode === "instant" && answered;
+        const isCorrect = answered && selected === q.ans;
+
+        return `
+          <div id="question-${idx}" class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="px-2 py-0.5 rounded-md text-xs font-bold bg-navy-900 dark:bg-indigo-600 text-white">P${idx + 1}</span>
+                <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">${q.topicName}</span>
+              </div>
+              ${showFeedback ? `<span class="text-xs font-bold ${isCorrect ? 'text-emerald-600' : 'text-rose-600'}">${isCorrect ? '✔ Correcta' : '✘ Incorrecta'}</span>` : ''}
+            </div>
+            <p class="text-sm sm:text-base font-semibold text-slate-900 dark:text-white mb-4">${q.q}</p>
+            <div class="space-y-2">
+              ${q.opts.map((opt, oi) => {
+                const isSelected = selected === oi;
+                const isRightAnswer = q.ans === oi;
+                let cls = "border-slate-200 dark:border-slate-700 hover:border-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20";
+                if (showFeedback) {
+                  if (isRightAnswer) cls = "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30";
+                  else if (isSelected && !isRightAnswer) cls = "border-rose-500 bg-rose-50 dark:bg-rose-900/30";
+                } else if (isSelected) {
+                  cls = "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30";
+                }
+                return `
+                  <button onclick="selectAnswer(${idx}, ${oi})" ${isSubmitted ? 'disabled' : ''}
+                    class="w-full text-left px-3.5 py-3 rounded-xl border-2 ${cls} transition text-sm ${isSubmitted ? 'cursor-not-allowed opacity-75' : ''}">
+                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 text-xs font-bold mr-2">${String.fromCharCode(65 + oi)}</span>
+                    <span class="text-slate-800 dark:text-slate-200">${opt}</span>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+            ${showFeedback ? `<p class="mt-3 text-xs italic text-slate-600 dark:text-slate-400 border-l-2 border-slate-300 dark:border-slate-600 pl-3">${q.exp}</p>` : ''}
+          </div>
+        `;
+      }).join("");
+    }
+
+    function selectAnswer(qIdx, optIdx) {
+      const st = state.students.find(s => s.id === state.currentStudentId);
+      if (!st || st.status === "submitted") return;
+      const q = state.currentExamQuestions[qIdx];
+      st.answers[q.uid] = optIdx;
+      recomputeScore(st);
+      saveState();
+      updateLiveMetrics();
+      renderQuestionNavPills();
+      renderQuestions();
+
+      if (state.correctionMode === "instant" && state.soundEnabled) {
+        const isCorrect = optIdx === q.ans;
+        playTone(isCorrect ? 880 : 220, 120);
+      }
+    }
+
+    function playTone(freq, duration) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.frequency.value = freq;
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        gain.gain.setValueAtTime(0.1, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration / 1000);
+        osc.start();
+        osc.stop(ctx.currentTime + duration / 1000);
+      } catch (e) {}
+    }
+
+    function updateLiveMetrics() {
+      const st = state.students.find(s => s.id === state.currentStudentId);
+      if (!st) return;
+      const answeredCount = Object.keys(st.answers).length;
+      document.getElementById("liveCorrectCount").textContent = `${st.correct} ✅`;
+      document.getElementById("liveWrongCount").textContent = `${st.wrong} ❌`;
+      document.getElementById("liveGradeDisplay").textContent = `${(st.score || 0).toFixed(1)} / 10`;
+      document.getElementById("progressText").textContent = `Respondidas: ${answeredCount} de 10`;
+      document.getElementById("modeBannerText").textContent = state.correctionMode === "instant"
+        ? "Modo: Corrección inmediata activa"
+        : "Modo: Corrección al finalizar";
+    }
+
+    function recomputeScore(st) {
+      const questions = getQuestionsForStudent(st.id);
+      let correct = 0, wrong = 0, unanswered = 0;
+      questions.forEach(q => {
+        const a = st.answers[q.uid];
+        if (a === undefined) unanswered++;
+        else if (a === q.ans) correct++;
+        else wrong++;
+      });
+      st.correct = correct;
+      st.wrong = wrong;
+      st.unanswered = unanswered;
+      st.score = Math.round((correct / questions.length) * 100) / 10;
+    }
+
+    // =========================================================================
+    // 11. CRONÓMETRO
+    // =========================================================================
+    function startTimer() {
+      if (state.timerInterval) clearInterval(state.timerInterval);
+      state.timerInterval = setInterval(() => {
+        const st = state.students.find(s => s.id === state.currentStudentId);
+        if (!st || st.status === "submitted") {
+          clearInterval(state.timerInterval);
+          return;
+        }
+        st.timeLeft = Math.max(0, st.timeLeft - 1);
+        st.timeUsed = 600 - st.timeLeft;
+        updateTimerDisplay();
+        if (st.timeLeft <= 0) {
+          clearInterval(state.timerInterval);
+          submitCurrentExam("timeout");
+        }
+        if (st.timeLeft % 10 === 0) saveState();
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const st = state.students.find(s => s.id === state.currentStudentId);
+      if (!st) return;
+      document.getElementById("timerDisplay").textContent = formatTime(st.timeLeft);
+      const pct = (st.timeLeft / 600) * 100;
+      document.getElementById("timerProgressBar").style.width = pct + "%";
+      const box = document.getElementById("timerBox");
+      if (st.timeLeft <= 60) {
+        box.className = "bg-rose-600 text-white rounded-xl px-3.5 py-2 text-center min-w-[110px]";
+      } else if (st.timeLeft <= 180) {
+        box.className = "bg-amber-600 text-white rounded-xl px-3.5 py-2 text-center min-w-[110px]";
+      } else {
+        box.className = "bg-navy-900 text-white rounded-xl px-3.5 py-2 text-center min-w-[110px]";
+      }
+    }
+
+    // =========================================================================
+    // 12. ENTREGA DEL EXAMEN
+    // =========================================================================
+    function openConfirmSubmitModal() {
+      document.getElementById("confirmSubmitModal").classList.remove("hidden");
+    }
+
+    function submitCurrentExam(reason = "submitted") {
+      const st = state.students.find(s => s.id === state.currentStudentId);
+      if (!st) return;
+      clearInterval(state.timerInterval);
+      recomputeScore(st);
+      st.status = "submitted";
+      st.submittedAt = Date.now();
+      st.timeUsed = 600 - st.timeLeft;
+      st.receiptCode = buildReceiptCode(st);
+      saveState();
+      closeModal("confirmSubmitModal");
+      showFinalSummary();
+      renderStudentCards();
+      showToast(reason === "timeout" ? "Tiempo agotado. Examen entregado." : "Examen entregado con éxito", reason === "timeout" ? "warning" : "success");
+    }
+
+    function buildReceiptCode(st) {
+      const payload = {
+        id: st.id,
+        name: st.name,
+        dni: st.dni,
+        answers: st.answers,
+        timeUsed: st.timeUsed,
+        score: st.score,
+        ts: st.submittedAt
+      };
+      return "CEI-EVAL-" + btoa(JSON.stringify(payload));
+    }
+
+    function copyReceiptCode() {
+      const st = state.students.find(s => s.id === state.currentStudentId);
+      if (!st || !st.receiptCode) return;
+      navigator.clipboard.writeText(st.receiptCode).then(() => {
+        showToast("Código copiado al portapapeles", "success");
+      }).catch(() => {
+        showToast("No se pudo copiar. Copiá manualmente.", "error");
+      });
+    }
+
+    function showFinalSummary() {
+      const st = state.students.find(s => s.id === state.currentStudentId);
+      if (!st) return;
+      document.getElementById("examFinalSummary").classList.remove("hidden");
+      document.getElementById("finalStudentHeader").textContent = st.name || `Puesto #${st.id}`;
+      document.getElementById("finalGradeBig").textContent = (st.score || 0).toFixed(1);
+      document.getElementById("finalOkCount").textContent = st.correct;
+      document.getElementById("finalErrCount").textContent = st.wrong;
+      document.getElementById("finalUnansweredCount").textContent = st.unanswered;
+      document.getElementById("finalTimeUsed").textContent = formatTime(st.timeUsed);
+
+      const breakdown = {};
+      TOPIC_KEYS.forEach(k => { breakdown[k] = { correct: 0, total: 0 }; });
+      state.currentExamQuestions.forEach(q => {
+        breakdown[q.topicKey].total++;
+        if (st.answers[q.uid] === q.ans) breakdown[q.topicKey].correct++;
+      });
+
+      document.getElementById("studentTopicBreakdown").innerHTML = TOPIC_KEYS.map(k => {
+        const b = breakdown[k];
+        const pct = b.total ? Math.round((b.correct / b.total) * 100) : 0;
+        const color = pct >= 50 ? "emerald" : "rose";
+        return `
+          <div class="bg-slate-50 dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+            <span class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 truncate">${TOPICS[k]}</span>
+            <div class="flex items-center justify-between mt-1">
+              <span class="text-lg font-black text-${color}-600 dark:text-${color}-400">${b.correct}/${b.total}</span>
+              <span class="text-xs font-semibold text-slate-500">${pct}%</span>
+            </div>
+            <div class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mt-1 overflow-hidden">
+              <div class="h-full bg-${color}-500" style="width:${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    // =========================================================================
+    // 13. DASHBOARD DOCENTE
+    // =========================================================================
+    function renderTeacherDashboard() {
+      renderTeacherKpis();
+      renderTeacherTable();
+      renderCourseTopicChart();
+      setCorrectionMode(state.correctionMode);
+    }
+
+    function renderTeacherKpis() {
+      const total = state.students.filter(s => s.name.trim() !== "").length;
+      const empty = state.students.filter(s => s.name.trim() === "").length;
+      const submitted = state.students.filter(s => s.status === "submitted").length;
+      const inProgress = state.students.filter(s => s.status === "in_progress").length;
+      const avgGrade = submitted > 0
+        ? (state.students.filter(s => s.status === "submitted").reduce((a, s) => a + (s.score || 0), 0) / submitted).toFixed(1)
+        : "—";
+
+      const kpis = [
+        { label: "Alumnos cargados", value: total, sub: `${empty} puestos libres`, color: "indigo" },
+        { label: "En curso", value: inProgress, sub: "exámenes activos", color: "amber" },
+        { label: "Entregados", value: submitted, sub: `${Math.max(0, total - submitted - inProgress)} pendientes`, color: "emerald" },
+        { label: "Nota promedio", value: avgGrade, sub: "sobre 10", color: "blue" },
+        { label: "Finalizados", value: `${submitted}/${total || 0}`, sub: "del total", color: "slate" }
+      ];
+
+      document.getElementById("teacherKpis").innerHTML = kpis.map(k => `
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-3 text-center">
+          <span class="block text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">${k.label}</span>
+          <span class="block text-2xl font-black text-${k.color}-600 dark:text-${k.color}-400 my-0.5">${k.value}</span>
+          <span class="block text-[10px] text-slate-400">${k.sub}</span>
+        </div>
+      `).join("");
+    }
+
+    function renderTeacherTable() {
+      const tbody = document.getElementById("teacherTableBody");
+      if (!tbody) return;
+
+      if (state.students.every(s => s.name.trim() === "")) {
+        tbody.innerHTML = `
+          <tr><td colspan="11" class="py-10 text-center text-slate-500 dark:text-slate-400">
+            <p class="text-sm font-semibold">Aún no hay alumnos cargados.</p>
+            <p class="text-xs mt-1">Usá "Importar Nómina" o agregá alumnos desde Inicio.</p>
+          </td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = state.students.filter(s => s.name.trim() !== "").map(st => {
+        const progress = Object.keys(st.answers || {}).length;
+        const statusLabel = st.status === "submitted" ? "Entregado" : st.status === "in_progress" ? "En curso" : "Sin iniciar";
+        const statusColor = st.status === "submitted" ? "emerald" : st.status === "in_progress" ? "amber" : "slate";
+        const grade = st.score !== null ? st.score.toFixed(1) : "—";
+
+        return `
+          <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+            <td class="py-2.5 px-3 font-mono font-bold text-slate-400">#${st.id}</td>
+            <td class="py-2.5 px-3">
+              <div class="font-semibold text-slate-900 dark:text-white">${st.name}</div>
+              <div class="text-xs text-slate-500 font-mono">${st.dni || '—'} · ${st.comision || 'Sin comisión'}</div>
+            </td>
+            <td class="py-2.5 px-3">
+              <span class="px-2 py-0.5 rounded-full text-xs font-bold bg-${statusColor}-100 dark:bg-${statusColor}-900/40 text-${statusColor}-800 dark:text-${statusColor}-300">
+                ${statusLabel}
+              </span>
+            </td>
+            <td class="py-2.5 px-3 text-center">
+              <div class="flex items-center gap-1 justify-center">
+                <div class="w-16 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                  <div class="h-full bg-indigo-500" style="width:${progress * 10}%"></div>
+                </div>
+                <span class="text-xs font-mono">${progress}/10</span>
+              </div>
+            </td>
+            <td class="py-2.5 px-3 text-center font-bold text-emerald-600">${st.correct || 0}</td>
+            <td class="py-2.5 px-3 text-center font-bold text-rose-600">${st.wrong || 0}</td>
+            <td class="py-2.5 px-3 text-center font-mono text-xs">${formatTime(st.timeUsed || 0)}</td>
+            <td class="py-2.5 px-3 text-center text-xs">${st.flags && Object.keys(st.flags).length ? "🚩" : "—"}</td>
+            <td class="py-2.5 px-3 text-center">
+              <span class="text-base font-black ${st.score >= 6 ? 'text-emerald-600' : st.score !== null ? 'text-rose-600' : 'text-slate-400'}">${grade}</span>
+            </td>
+            <td class="py-2.5 px-3 text-center text-xs font-semibold">
+              ${st.score === null ? "—" : st.score >= 6 ? "Aprobado" : "Desaprobado"}
+            </td>
+            <td class="py-2.5 px-3 text-right no-print">
+              <button onclick="openAuditPanel(${st.id})" class="px-2 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-300 text-xs font-bold hover:bg-indigo-100">Auditar</button>
+              <button onclick="openEditStudentModal(${st.id}, 'teacher')" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold hover:bg-slate-200">Editar</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderCourseTopicChart() {
+      const container = document.getElementById("courseTopicChart");
+      if (!container) return;
+
+      const submitted = state.students.filter(s => s.status === "submitted");
+      const stats = {};
+      TOPIC_KEYS.forEach(k => { stats[k] = { correct: 0, total: 0 }; });
+
+      submitted.forEach(st => {
+        const qs = getQuestionsForStudent(st.id);
+        qs.forEach(q => {
+          stats[q.topicKey].total++;
+          if (st.answers[q.uid] === q.ans) stats[q.topicKey].correct++;
+        });
+      });
+
+      let hardest = { key: null, pct: 101 };
+      const html = TOPIC_KEYS.map(k => {
+        const s = stats[k];
+        const pct = s.total ? Math.round((s.correct / s.total) * 100) : 0;
+        if (s.total > 0 && pct < hardest.pct) hardest = { key: k, pct };
+        const color = pct >= 70 ? "emerald" : pct >= 50 ? "amber" : "rose";
+        return `
+          <div class="bg-white dark:bg-slate-800 rounded-lg p-3 border border-slate-200 dark:border-slate-700">
+            <span class="block text-[10px] font-bold uppercase text-slate-500 dark:text-slate-400 truncate">${TOPICS[k]}</span>
+            <div class="flex items-center justify-between mt-1">
+              <span class="text-xl font-black text-${color}-600 dark:text-${color}-400">${pct}%</span>
+              <span class="text-[10px] text-slate-400">${s.correct}/${s.total}</span>
+            </div>
+            <div class="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full mt-1 overflow-hidden">
+              <div class="h-full bg-${color}-500" style="width:${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      container.innerHTML = html;
+      document.getElementById("hardestTopicBadge").textContent = hardest.key
+        ? `Eje más desafiante: ${TOPICS[hardest.key]} (${hardest.pct}%)`
+        : "Eje más desafiante: —";
+    }
+
+    // =========================================================================
+    // 14. AUDITORÍA
+    // =========================================================================
+    function openAuditPanel(studentId) {
+      const st = state.students.find(s => s.id === studentId);
+      if (!st) return;
+
+      document.getElementById("auditTitle").textContent = `Detalle de ${st.name || 'Puesto #' + st.id}`;
+      const questions = getQuestionsForStudent(st.id);
+
+      document.getElementById("auditContent").innerHTML = questions.map((q, i) => {
+        const answer = st.answers[q.uid];
+        const isCorrect = answer === q.ans;
+        const isAnswered = answer !== undefined;
+
+        return `
+          <div class="p-3 rounded-xl border ${isCorrect ? 'border-emerald-200 bg-emerald-50/50 dark:bg-emerald-900/20' : isAnswered ? 'border-rose-200 bg-rose-50/50 dark:bg-rose-900/20' : 'border-slate-200 dark:border-slate-700'}">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-sm font-semibold text-slate-900 dark:text-white">P${i + 1}. ${q.q}</p>
+              <span class="text-xs font-bold ${isCorrect ? 'text-emerald-600' : isAnswered ? 'text-rose-600' : 'text-slate-400'}">
+                ${isCorrect ? '✔' : isAnswered ? '✘' : '○'}
+              </span>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1"><strong>Respuesta:</strong> ${isAnswered ? q.opts[answer] : "—"}</p>
+            ${isAnswered && !isCorrect ? `<p class="text-xs text-emerald-700 dark:text-emerald-400 mt-0.5"><strong>Correcta:</strong> ${q.opts[q.ans]}</p>` : ""}
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 italic">${q.exp}</p>
+          </div>
+        `;
+      }).join("");
+
+      document.getElementById("auditPanel").classList.remove("hidden");
+      document.getElementById("auditPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function closeAuditPanel() {
+      document.getElementById("auditPanel").classList.add("hidden");
+    }
+
+    // =========================================================================
+    // 15. IMPORTAR NÓMINA
+    // =========================================================================
+    function openImportRosterModal() {
+      document.getElementById("importRosterTextarea").value = "";
+      document.getElementById("importRosterModal").classList.remove("hidden");
+    }
+
+    function fillCurrentRosterInTextarea() {
+      const text = state.students
+        .filter(s => s.name.trim() !== "")
+        .map(s => `${s.name}, ${s.dni}, ${s.comision}`)
+        .join("\n");
+      document.getElementById("importRosterTextarea").value = text;
+    }
+
+    function processImportRoster() {
+      const text = document.getElementById("importRosterTextarea").value.trim();
+      if (!text) {
+        showToast("No hay datos para importar", "warning");
+        return;
+      }
+
+      const lines = text.split("\n").map(l => l.trim()).filter(Boolean).slice(0, TOTAL_PUESTOS);
+
+      lines.forEach((line, i) => {
+        const parts = line.split(/[,;\t]+/).map(p => p.trim());
+        const st = state.students[i];
+        if (!st) return;
+        const name = parts[0] || "";
+        st.name = name;
+        st.dni = parts[1] || "";
+        st.comision = parts[2] || "";
+        if (name && st.status === "empty") st.status = "not_started";
+        if (!name) st.status = "empty";
+      });
+
+      for (let i = lines.length; i < TOTAL_PUESTOS; i++) {
+        state.students[i] = { ...DEFAULT_STUDENTS[i] };
+      }
+
+      // Invalidar caché de los alumnos actualizados (para asegurar sets consistentes)
+      lines.forEach((_, i) => examCache.delete(`${CACHE_VERSION}_${i + 1}`));
+
+      saveState();
+      renderAll();
+      closeModal("importRosterModal");
+      showToast(`Nómina importada: ${lines.length} alumnos`, "success");
+    }
+
+    // =========================================================================
+    // 16. IMPORTAR COMPROBANTE
+    // =========================================================================
+    function openImportReceiptModal() {
+      document.getElementById("receiptCodeInput").value = "";
+      document.getElementById("importReceiptModal").classList.remove("hidden");
+    }
+
+    function processImportReceipt() {
+      const code = document.getElementById("receiptCodeInput").value.trim();
+      if (!code.startsWith("CEI-EVAL-")) {
+        showToast("Código inválido", "error");
+        return;
+      }
+      try {
+        const payload = JSON.parse(atob(code.replace("CEI-EVAL-", "")));
+        const st = state.students.find(s => s.id === payload.id);
+        if (!st) throw new Error("Alumno no encontrado");
+
+        st.name = payload.name || st.name;
+        st.dni = payload.dni || st.dni;
+        st.answers = payload.answers || {};
+        st.timeUsed = payload.timeUsed || 0;
+        st.timeLeft = 600 - st.timeUsed;
+        st.status = "submitted";
+        st.submittedAt = payload.ts || Date.now();
+        st.receiptCode = code;
+        recomputeScore(st);
+
+        saveState();
+        renderAll();
+        closeModal("importReceiptModal");
+        showToast(`Comprobante importado: ${st.name}`, "success");
+      } catch (e) {
+        showToast("No se pudo decodificar el código", "error");
+      }
+    }
+
+    // =========================================================================
+    // 17. CONFIGURACIÓN DE CÁTEDRA
+    // =========================================================================
+    function openCourseSettingsModal() {
+      document.getElementById("cfgInstitution").value = state.institution;
+      document.getElementById("cfgSubject").value = state.subject;
+      document.getElementById("cfgTeacher").value = state.teacher;
+      document.getElementById("cfgDate").value = state.dateText;
+      document.getElementById("cfgPin").value = state.teacherPin;
+      document.getElementById("courseSettingsModal").classList.remove("hidden");
+    }
+
+    function saveCourseSettings() {
+      state.institution = document.getElementById("cfgInstitution").value.trim() || state.institution;
+      state.subject = document.getElementById("cfgSubject").value.trim() || state.subject;
+      state.teacher = document.getElementById("cfgTeacher").value.trim() || state.teacher;
+      state.dateText = document.getElementById("cfgDate").value.trim() || state.dateText;
+      const newPin = document.getElementById("cfgPin").value.trim();
+      if (newPin.length >= 4 && newPin.length <= 8) state.teacherPin = newPin;
+      applyInstitutionalData();
+      saveState();
+      closeModal("courseSettingsModal");
+      showToast("Configuración guardada", "success");
+    }
+
+    function applyInstitutionalData() {
+      document.getElementById("headerInstitution").textContent = state.institution;
+      document.getElementById("headerSubject").textContent = state.subject;
+      document.getElementById("headerTeacherText").textContent = state.teacher;
+      document.getElementById("headerDateText").textContent = state.dateText;
+      document.getElementById("teacherDashboardTitle").textContent = `Dashboard Docente — ${state.teacher}`;
+      const pInst = document.getElementById("printInstitutionFoot");
+      const pSub = document.getElementById("printSubjectFoot");
+      const pTeach = document.getElementById("printTeacherFoot");
+      if (pInst) pInst.textContent = state.institution;
+      if (pSub) pSub.textContent = `Cátedra: ${state.subject} • ${state.dateText}`;
+      if (pTeach) pTeach.textContent = state.teacher;
+    }
+
+    // =========================================================================
+    // 18. MODO DE CORRECCIÓN
+    // =========================================================================
+    function setCorrectionMode(mode) {
+      state.correctionMode = mode;
+      saveState();
+      const b1 = document.getElementById("btnModeInstant");
+      const b2 = document.getElementById("btnModeEnd");
+      if (b1) {
+        b1.textContent = "Feedback instantáneo al responder";
+        b1.className = mode === "instant"
+          ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white"
+          : "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300";
+      }
+      if (b2) {
+        b2.textContent = "Al finalizar el examen";
+        b2.className = mode === "end"
+          ? "px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white"
+          : "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300";
+      }
+      if (state.currentStudentId) {
+        renderQuestions();
+        renderQuestionNavPills();
+        updateLiveMetrics();
+      }
+    }
+
+    // =========================================================================
+    // 19. FILTRO DE PREGUNTAS
+    // =========================================================================
+    function setQuestionFilter(filter) {
+      state.questionFilter = filter;
+      const b1 = document.getElementById("btnFilterAll");
+      const b2 = document.getElementById("btnFilterUnanswered");
+      if (b1) b1.className = filter === "all"
+        ? "px-2.5 py-1 rounded-lg font-bold bg-navy-900 text-white transition"
+        : "px-2.5 py-1 rounded-lg font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition";
+      if (b2) b2.className = filter === "unanswered"
+        ? "px-2.5 py-1 rounded-lg font-bold bg-navy-900 text-white transition"
+        : "px-2.5 py-1 rounded-lg font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition";
+      renderQuestions();
+    }
+
+    // =========================================================================
+    // 20. INLINE SAVE EN EXAMEN
+    // =========================================================================
+    function saveInlineStudentData() {
+      const st = state.students.find(s => s.id === state.currentStudentId);
+      if (!st) return;
+      st.name = document.getElementById("examInlineName").value.trim();
+      st.dni = document.getElementById("examInlineDni").value.trim();
+      saveState();
+      renderStudentCards();
+      showToast("Datos guardados", "success");
+    }
+
+    // =========================================================================
+    // 21. RESET MASIVO
+    // =========================================================================
+    function openResetAllModal() {
+      if (!confirm("¿Reiniciar TODOS los alumnos? Se borrarán respuestas y tiempos.")) return;
+      state.students = DEFAULT_STUDENTS.map(s => ({ ...s }));
+      examCache.clear();
+      saveState();
+      renderAll();
+      showToast("Todos los alumnos reiniciados", "warning");
+    }
+
+    // =========================================================================
+    // 22. EXPORTAR CSV
+    // =========================================================================
+    function exportCSV() {
+      const rows = [
+        ["Puesto", "Nombre", "DNI", "Comisión", "Estado", "Correctas", "Errores", "Sin responder", "Nota", "Tiempo"]
+      ];
+      state.students.filter(s => s.name.trim() !== "").forEach(st => {
+        rows.push([
+          st.id, st.name, st.dni, st.comision, st.status,
+          st.correct, st.wrong, st.unanswered,
+          st.score !== null ? st.score.toFixed(1) : "",
+          formatTime(st.timeUsed)
+        ]);
+      });
+      const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+      const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `acta_evaluacion_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("CSV exportado", "success");
+    }
+
+    // =========================================================================
+    // 23. RENDER GLOBAL
+    // =========================================================================
+    function renderAll() {
+      renderStudentCards();
+      if (state.currentStudentId) renderExamView();
+      if (!document.getElementById("viewTeacher").classList.contains("hidden")) {
+        renderTeacherDashboard();
+      }
+    }
+
+    // =========================================================================
+    // 24. INICIALIZACIÓN
+    // =========================================================================
+    document.addEventListener("DOMContentLoaded", () => {
+      if (state.darkMode) document.documentElement.classList.add("dark");
+      document.getElementById("iconSoundOn").classList.toggle("hidden", !state.soundEnabled);
+      document.getElementById("iconSoundOff").classList.toggle("hidden", state.soundEnabled);
+      applyInstitutionalData();
+      renderAll();
+      setCorrectionMode(state.correctionMode);
+      setQuestionFilter("all");
+
+      if (!CSS.supports("backdrop-filter", "blur(4px)")) {
+        document.querySelectorAll('[class*="backdrop-blur"]').forEach(el => {
+          el.style.backgroundColor = "rgba(15, 23, 42, 0.85)";
+        });
+      }
+    });
+  </script>
+</body>
+</html>
